@@ -546,6 +546,14 @@ function renderCharts(charts, metricDefs) {
           }
         },
         scales: {
+          x: {
+            ticks: {
+              maxRotation: 45,
+              minRotation: 0,
+              autoSkip: true,
+              maxTicksLimit: 12
+            }
+          },
           y: { ticks: { callback: v => yLabel === '%' ? v.toFixed(2) + '%' : yLabel + v } }
         }
       }
@@ -598,7 +606,16 @@ function buildCustomChart() {
     });
   });
 
-  const scalesConfig = {};
+  const scalesConfig = {
+    x: {
+      ticks: {
+        maxRotation: 45,
+        minRotation: 0,
+        autoSkip: true,
+        maxTicksLimit: 12
+      }
+    }
+  };
   Object.entries(yAxes).forEach(([id, label], i) => {
     scalesConfig[id] = {
       position: i === 0 ? 'left' : 'right',
