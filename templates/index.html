@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投放数据分析工具</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         background: #f5f7fa; color: #333; }
+  header { background: #2c5f8a; color: #fff; padding: 16px 24px;
+           display: flex; align-items: center; gap: 12px; }
+  header h1 { font-size: 20px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  /* 卡片 */
+  .card { background: #fff; border-radius: 10px; padding: 20px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+  .card h2 { font-size: 15px; color: #2c5f8a; margin-bottom: 14px;
+             border-bottom: 2px solid #e8f0f8; padding-bottom: 8px; }
+
+  /* 上传区 */
+  #dropzone { border: 2px dashed #b0c4de; border-radius: 8px; padding: 32px;
+              text-align: center; cursor: pointer; transition: border-color .2s; }
+  #dropzone.dragover { border-color: #2c5f8a; background: #f0f6ff; }
+  #dropzone p { color: #888; margin-top: 8px; font-size: 14px; }
+  #file-input { display: none; }
+  .file-tag { display: inline-flex; align-items: center; gap: 6px;
+              background: #e8f0f8; color: #2c5f8a; border-radius: 16px;
+              padding: 4px 12px; font-size: 13px; margin: 4px; }
+  .file-tag span { cursor: pointer; color: #999; }
+
+  /* 按钮 */
+  .btn { padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer;
+         font-size: 14px; transition: opacity .2s; }
+  .btn-primary { background: #2c5f8a; color: #fff; }
+  .btn-secondary { background: #e8f0f8; color: #2c5f8a; }
+  .btn-danger { background: #ff6b6b; color: #fff; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .btn:hover { opacity: 0.85; }
+
+  /* 指标配置 */
+  .metric-row { display: grid;
+    grid-template-columns: 160px 1fr 1fr 130px 100px 90px auto;
+    gap: 8px; align-items: center; padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0; }
+  .metric-row:first-child { font-weight: 600; font-size: 12px; color: #888; }
+  select, input[type="text"] { width: 100%; padding: 6px 8px; border: 1px solid #d0d9e8;
+    border-radius: 6px; font-size: 13px; }
+  .config-manage { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+                   margin-bottom: 12px; }
+  .saved-config-tag { display: inline-flex; align-items: center; gap: 6px;
+    background: #f0f6ff; border: 1px solid #b0c4de; border-radius: 16px;
+    padding: 4px 12px; font-size: 13px; cursor: pointer; }
+  .saved-config-tag.active { background: #2c5f8a; color: #fff; border-color: #2c5f8a; }
+  .saved-config-tag .del { cursor: pointer; color: #ff6b6b; }
+
+  /* 图表区 */
+  .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+                 gap: 20px; }
+  .chart-card { background: #fff; border-radius: 10px; padding: 16px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .chart-card h3 { font-size: 14px; color: #555; margin-bottom: 12px; }
+  .chart-container { position: relative; height: 280px; }
+
+  /* 自定义图 */
+  .custom-chart-builder { background: #f8fafc; border-radius: 8px; padding: 14px;
+                           margin-bottom: 16px; }
+  .custom-chart-builder label { font-size: 13px; color: #666; margin-right: 8px; }
+
+  /* 表格 */
+  .table-wrapper { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #2c5f8a; color: #fff; padding: 8px 12px; text-align: left;
+       white-space: nowrap; }
+  td { padding: 7px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+  tr:hover td { background: #f8fafc; }
+  .anomaly { background: #fff0f0 !important; color: #c0392b; font-weight: 600; }
+  .platform-title { font-weight: 600; color: #2c5f8a; margin: 12px 0 6px; }
+
+  /* 时间筛选 */
+  .time-filter { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+                 margin-bottom: 12px; font-size: 13px; }
+
+  /* 分析按钮区 */
+  .action-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* Spinner */
+  .spinner { display: none; width: 18px; height: 18px; border: 3px solid #ccc;
+             border-top-color: #2c5f8a; border-radius: 50%;
+             animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading .spinner { display: inline-block; }
+
+  /* Tab */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab { padding: 8px 18px; border-radius: 6px 6px 0 0; cursor: pointer;
+         font-size: 14px; background: #e8f0f8; color: #555; }
+
+  /* AI 文本分析 */
+  .ai-analysis-section { padding: 0; }
+  .ai-analysis-header { display: flex; align-items: center; justify-content: space-between;
+                        flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .ai-analysis-content { min-height: 200px; }
+  .ai-placeholder { text-align: center; padding: 60px 20px; color: #aaa; }
+  .ai-placeholder p { margin-top: 10px; font-size: 14px; }
+  .ai-loading { text-align: center; padding: 60px 20px; color: #2c5f8a; }
+  .ai-loading .ai-spinner { width: 36px; height: 36px; border: 4px solid #e8f0f8;
+    border-top-color: #2c5f8a; border-radius: 50%;
+    animation: spin .8s linear infinite; margin: 0 auto 16px; }
+  .ai-loading p { font-size: 14px; }
+  .ai-report { line-height: 1.8; font-size: 14px; color: #333; }
+  .ai-report h3 { font-size: 15px; color: #2c5f8a; margin: 20px 0 8px;
+                  padding-bottom: 4px; border-bottom: 1px solid #e8f0f8; }
+  .ai-report h3:first-child { margin-top: 0; }
+  .ai-report p { margin-bottom: 10px; }
+  .ai-report ul, .ai-report ol { padding-left: 20px; margin-bottom: 10px; }
+  .ai-report li { margin-bottom: 4px; }
+  .ai-report strong { color: #c0392b; }
+  .ai-report .highlight { background: #fffbea; border-left: 3px solid #f5a623;
+    padding: 8px 12px; border-radius: 0 6px 6px 0; margin: 10px 0; }
+  .ai-error { background: #fff0f0; border: 1px solid #ffcdd2; border-radius: 8px;
+              padding: 16px; color: #c0392b; font-size: 14px; }
+  .tab.active { background: #2c5f8a; color: #fff; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Toast */
+  #toast { position: fixed; bottom: 24px; right: 24px; background: #333; color: #fff;
+           padding: 10px 18px; border-radius: 8px; font-size: 14px; display: none;
+           z-index: 1000; }
+</style>
+</head>
+<body>
+<header>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+  </svg>
+  <h1>投放数据分析工具</h1>
+</header>
+
+<div class="container">
+  <!-- 上传区 -->
+  <div class="card">
+    <h2>📁 上传数据文件</h2>
+    <div id="dropzone" onclick="document.getElementById('file-input').click()">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#b0c4de" stroke-width="1.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <p>拖拽或点击上传 CSV 文件（支持多文件）</p>
+    </div>
+    <input type="file" id="file-input" accept=".csv" multiple>
+    <div id="file-list" style="margin-top:10px"></div>
+    <div id="field-preview" style="margin-top:10px; font-size:13px; color:#888"></div>
+  </div>
+
+  <!-- 指标配置 -->
+  <div class="card">
+    <h2>⚙️ 指标配置</h2>
+    <div class="config-manage">
+      <span style="font-size:13px;color:#666">已保存配置：</span>
+      <div id="saved-configs"></div>
+      <input type="text" id="config-name-input" placeholder="新配置名称..." style="width:160px">
+      <button class="btn btn-secondary btn-sm" onclick="saveCurrentConfig()">💾 保存当前配置</button>
+    </div>
+    <div id="metrics-header" class="metric-row" style="font-size:12px;color:#888;font-weight:600">
+      <div>指标名称</div><div>分子字段</div><div>分母字段</div>
+      <div>数据类型</div><div>货币/单位</div><div></div><div></div>
+    </div>
+    <div id="metrics-list"></div>
+    <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="addMetricRow()">＋ 添加指标</button>
+  </div>
+
+  <!-- 操作按钮 -->
+  <div class="card" style="padding:16px">
+    <div class="action-row">
+      <button class="btn btn-primary" id="analyze-btn" onclick="runAnalysis()">
+        📊 生成分析
+        <div class="spinner" style="vertical-align:middle;margin-left:6px"></div>
+      </button>
+      <button class="btn btn-secondary" onclick="exportExcel()">📥 导出 Excel</button>
+    </div>
+  </div>
+
+  <!-- 结果区 -->
+  <div id="results-section" style="display:none">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('charts')">📈 图表分析</div>
+      <div class="tab" onclick="switchTab('table')">📋 数据表格</div>
+      <div class="tab" onclick="switchTab('ai')">🤖 AI 智能分析</div>
+    </div>
+
+    <!-- 图表 Tab -->
+    <div id="tab-charts" class="tab-content active">
+      <!-- 自定义图表 -->
+      <div class="card">
+        <h2>🎨 自定义对比图</h2>
+        <div class="custom-chart-builder">
+          <label>选择指标：</label>
+          <div id="custom-metric-checkboxes" style="display:inline-flex;gap:12px;flex-wrap:wrap"></div>
+          <button class="btn btn-secondary btn-sm" style="margin-left:12px" onclick="buildCustomChart()">生成自定义图</button>
+        </div>
+        <div class="chart-container" style="max-width:800px">
+          <canvas id="customChart"></canvas>
+        </div>
+      </div>
+      <!-- 分组图表 -->
+      <div class="charts-grid" id="charts-grid"></div>
+    </div>
+
+    <!-- 表格 Tab -->
+    <div id="tab-table" class="tab-content">
+      <div class="card">
+        <h2>📋 数据汇总</h2>
+        <div class="time-filter" id="time-filter"></div>
+        <div id="tables-container"></div>
+      </div>
+    </div>
+
+    <!-- AI 分析 Tab -->
+    <div id="tab-ai" class="tab-content">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <h2 style="margin:0;border:none;padding:0">🤖 AI 智能投放分析</h2>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <input type="password" id="ai-api-key" placeholder="输入 Anthropic API Key（sk-ant-...）"
+              style="width:280px;padding:7px 10px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
+            <button class="btn btn-primary" id="ai-analyze-btn" onclick="runAIAnalysis()">
+              ✨ 生成专业分析报告
+              <div class="spinner" style="vertical-align:middle;margin-left:6px"></div>
+            </button>
+          </div>
+        </div>
+        <div id="ai-analysis-content">
+          <div class="ai-placeholder">
+            <p style="font-size:32px">🤖</p>
+            <p style="margin-top:10px;color:#aaa;font-size:14px">填写 API Key 后点击按钮，AI 将以专业投放数据优化师视角分析您的数据</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// 状态
+// ─────────────────────────────────────────────────────────────
+let uploadedFiles = [];   // [{filename, platform, columns, time_column, rows}, ...]
+let allColumns = [];      // 所有文件的字段并集
+let metricRows = [];      // [{name, numerator, denominator, type, currency, unit}, ...]
+let analysisResult = null;
+let chartInstances = {};  // canvas id → Chart 实例
+
+// ─────────────────────────────────────────────────────────────
+// 工具
+// ─────────────────────────────────────────────────────────────
+function showToast(msg, duration=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', duration);
+}
+
+function getColors(n) {
+  const palette = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f',
+                   '#edc948','#b07aa1','#ff9da7','#9c755f','#bab0ac'];
+  return Array.from({length: n}, (_, i) => palette[i % palette.length]);
+}
+
+function destroyChart(id) {
+  if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+function yAxisLabel(type, currency='', unit='') {
+  if (type === 'percent') return '%';
+  if (type === 'currency') return currency || '$';
+  if (type === 'custom') return unit || '';
+  return '';
+}
+
+// ─────────────────────────────────────────────────────────────
+// 上传
+// ─────────────────────────────────────────────────────────────
+const dropzone = document.getElementById('dropzone');
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+document.getElementById('file-input').addEventListener('change', e => handleFiles(e.target.files));
+
+async function handleFiles(files) {
+  if (!files.length) return;
+  const fd = new FormData();
+  for (const f of files) fd.append('files', f);
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    if (!res.ok) { showToast('❌ 上传失败: ' + res.status); return; }
+    const data = await res.json();
+    if (data.error) { showToast('❌ ' + data.error); return; }
+    uploadedFiles = uploadedFiles.concat(data.files);
+    allColumns = [...new Set(uploadedFiles.flatMap(f => f.columns))];
+    renderFileList();
+    renderFieldPreview();
+    refreshMetricFieldOptions();
+    loadSavedConfigs();
+  } catch(e) {
+    showToast('❌ 上传失败：' + e.message);
+  }
+}
+
+function renderFileList() {
+  const el = document.getElementById('file-list');
+  el.innerHTML = uploadedFiles.map((f, i) =>
+    `<span class="file-tag">📄 ${f.platform} (${f.rows} 行)
+     <span onclick="removeFile(${i})">✕</span></span>`
+  ).join('');
+}
+
+function removeFile(idx) {
+  uploadedFiles.splice(idx, 1);
+  allColumns = [...new Set(uploadedFiles.flatMap(f => f.columns))];
+  renderFileList(); renderFieldPreview(); refreshMetricFieldOptions();
+}
+
+function renderFieldPreview() {
+  const el = document.getElementById('field-preview');
+  if (!uploadedFiles.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '识别字段：' + allColumns.map(c => `<code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;margin:2px">${c}</code>`).join(' ');
+}
+
+// ─────────────────────────────────────────────────────────────
+// 指标配置行
+// ─────────────────────────────────────────────────────────────
+function addMetricRow(preset={}) {
+  const row = {
+    name: preset.name || '', numerator: preset.numerator || '',
+    denominator: preset.denominator || '', type: preset.type || 'percent',
+    currency: preset.currency || '', unit: preset.unit || ''
+  };
+  metricRows.push(row);
+  renderMetricRows();
+}
+
+function renderMetricRows() {
+  const container = document.getElementById('metrics-list');
+  const opts = allColumns.map(c => `<option value="${c}">${c}</option>`).join('');
+  container.innerHTML = metricRows.map((m, i) => `
+    <div class="metric-row" id="mrow-${i}">
+      <input type="text" value="${m.name}" placeholder="指标名称"
+        oninput="metricRows[${i}].name=this.value">
+      <select onchange="metricRows[${i}].numerator=this.value">
+        <option value="">--选择分子--</option>${opts}
+      </select>
+      <select onchange="metricRows[${i}].denominator=this.value">
+        <option value="">--选择分母--</option>${opts}
+      </select>
+      <select onchange="metricRows[${i}].type=this.value;renderMetricRows()">
+        <option value="percent" ${m.type==='percent'?'selected':''}>百分比 (%)</option>
+        <option value="currency" ${m.type==='currency'?'selected':''}>金额</option>
+        <option value="count" ${m.type==='count'?'selected':''}>数量</option>
+        <option value="custom" ${m.type==='custom'?'selected':''}>自定义</option>
+      </select>
+      <input type="text" placeholder="${m.type==='currency'?'USD/CNY...':'单位...'}"
+        value="${m.type==='currency'?m.currency:m.unit}"
+        oninput="${m.type==='currency'?`metricRows[${i}].currency=this.value`:`metricRows[${i}].unit=this.value`}">
+      <div></div>
+      <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
+    </div>
+  `).join('');
+  // 恢复 select 选中值
+  metricRows.forEach((m, i) => {
+    const row = document.getElementById(`mrow-${i}`);
+    if (!row) return;
+    const selects = row.querySelectorAll('select');
+    selects[0].value = m.numerator;
+    selects[1].value = m.denominator;
+  });
+}
+
+function removeMetricRow(idx) {
+  metricRows.splice(idx, 1);
+  renderMetricRows();
+}
+
+function refreshMetricFieldOptions() { renderMetricRows(); }
+
+// ─────────────────────────────────────────────────────────────
+// 已保存配置管理
+// ─────────────────────────────────────────────────────────────
+async function loadSavedConfigs() {
+  try {
+    const res = await fetch('/api/metrics');
+    if (!res.ok) throw new Error('加载失败: ' + res.status);
+    const configs = await res.json();
+    const el = document.getElementById('saved-configs');
+    el.innerHTML = configs.map(c => `
+      <span class="saved-config-tag" onclick="applyConfig('${c.name}')">
+        ${c.name}
+        <span class="del" onclick="event.stopPropagation();deleteConfig('${c.name}')">✕</span>
+      </span>
+    `).join('');
+  } catch(e) {
+    showToast('❌ 加载配置失败：' + e.message);
+  }
+}
+
+async function saveCurrentConfig() {
+  const name = document.getElementById('config-name-input').value.trim();
+  if (!name) { showToast('请输入配置名称'); return; }
+  try {
+    const res = await fetch('/api/metrics', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name, metrics: metricRows })
+    });
+    if (!res.ok) { showToast('❌ 保存失败'); return; }
+    showToast(`✅ 配置"${name}"已保存`);
+    loadSavedConfigs();
+  } catch(e) {
+    showToast('❌ 保存失败：' + e.message);
+  }
+}
+
+async function deleteConfig(name) {
+  try {
+    const res = await fetch(`/api/metrics/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    if (!res.ok) { showToast('❌ 删除失败'); return; }
+    showToast(`🗑️ 已删除"${name}"`);
+    loadSavedConfigs();
+  } catch(e) {
+    showToast('❌ 删除失败：' + e.message);
+  }
+}
+
+async function applyConfig(name) {
+  try {
+    const res = await fetch('/api/metrics');
+    if (!res.ok) { showToast('❌ 加载配置失败'); return; }
+    const configs = await res.json();
+    const cfg = configs.find(c => c.name === name);
+    if (!cfg) return;
+    metricRows = cfg.metrics.map(m => ({...m}));
+    renderMetricRows();
+    showToast(`✅ 已加载配置"${name}"`);
+  } catch(e) {
+    showToast('❌ 加载配置失败：' + e.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 运行分析
+// ─────────────────────────────────────────────────────────────
+async function runAnalysis() {
+  if (!uploadedFiles.length) { showToast('请先上传 CSV 文件'); return; }
+  const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
+  if (!validMetrics.length) { showToast('请至少配置一个完整的指标'); return; }
+
+  document.getElementById('analyze-btn').classList.add('loading');
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        files: uploadedFiles.map(f => ({filename: f.filename, platform: f.platform, time_column: f.time_column})),
+        metrics: validMetrics
+      })
+    });
+    if (!res.ok) { showToast('❌ 分析失败: ' + res.status); return; }
+    const data = await res.json();
+    if (data.error) { showToast('❌ ' + data.error); return; }
+    analysisResult = data;
+    document.getElementById('results-section').style.display = 'block';
+    renderCharts(data.charts, validMetrics);
+    renderTables(data.tables, validMetrics);
+    renderCustomChartBuilder(validMetrics);
+  } catch(e) {
+    showToast('❌ 分析失败：' + e.message);
+  } finally {
+    document.getElementById('analyze-btn').classList.remove('loading');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 图表渲染
+// ─────────────────────────────────────────────────────────────
+function renderCharts(charts, metricDefs) {
+  const grid = document.getElementById('charts-grid');
+  grid.innerHTML = '';
+
+  // 按数据类型分组
+  const groups = {};
+  for (const [mname, cdata] of Object.entries(charts)) {
+    const dtype = cdata.type || 'count';
+    if (!groups[dtype]) groups[dtype] = [];
+    groups[dtype].push({ name: mname, ...cdata });
+  }
+
+  const groupLabels = { percent:'转化率对比', currency:'成本对比', count:'数量对比', custom:'自定义指标对比' };
+
+  for (const [dtype, items] of Object.entries(groups)) {
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    const canvasId = `chart-${dtype}`;
+    card.innerHTML = `<h3>${groupLabels[dtype] || dtype}</h3><div class="chart-container"><canvas id="${canvasId}"></canvas></div>`;
+    grid.appendChild(card);
+
+    destroyChart(canvasId);
+
+    const labels = items[0]?.labels || [];
+    const colors = getColors(items.flatMap(i => i.datasets).length);
+    let colorIdx = 0;
+    const datasets = items.flatMap(item =>
+      item.datasets.map(ds => ({
+        label: `${ds.label} - ${item.name}`,
+        data: ds.data,
+        borderColor: colors[colorIdx++],
+        backgroundColor: 'transparent',
+        tension: 0.3, pointRadius: 4,
+      }))
+    );
+
+    const yLabel = yAxisLabel(dtype, items[0]?.currency, items[0]?.unit);
+    chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const v = ctx.parsed.y;
+                if (v === null || v === undefined) return ctx.dataset.label + ': -';
+                const formatted = yLabel === '%' ? v.toFixed(2) + '%' : yLabel + v.toFixed(2);
+                return ctx.dataset.label + ': ' + formatted;
+              }
+            }
+          }
+        },
+        scales: {
+          y: { ticks: { callback: v => yLabel === '%' ? v.toFixed(2) + '%' : yLabel + v } }
+        }
+      }
+    });
+  }
+}
+
+// 自定义图表
+function renderCustomChartBuilder(metricDefs) {
+  const el = document.getElementById('custom-metric-checkboxes');
+  el.innerHTML = metricDefs.map(m =>
+    `<label style="font-size:13px;cursor:pointer">
+      <input type="checkbox" value="${m.name}"> ${m.name}
+    </label>`
+  ).join('');
+}
+
+function buildCustomChart() {
+  if (!analysisResult) return;
+  const checked = [...document.querySelectorAll('#custom-metric-checkboxes input:checked')].map(i => i.value);
+  if (!checked.length) { showToast('请勾选至少一个指标'); return; }
+
+  destroyChart('customChart');
+
+  const charts = analysisResult.charts;
+  const colors = getColors(checked.length * 4);
+  let colorIdx = 0;
+
+  const types = [...new Set(checked.map(n => charts[n]?.type))];
+  const hasMixed = types.length > 1;
+
+  const labels = charts[checked[0]]?.labels || [];
+  const datasets = [];
+  const yAxes = {};
+
+  checked.forEach(mname => {
+    const cdata = charts[mname];
+    if (!cdata) return;
+    const yAxisId = hasMixed ? cdata.type : 'y';
+    yAxes[yAxisId] = yAxisLabel(cdata.type, cdata.currency, cdata.unit);
+    cdata.datasets.forEach(ds => {
+      datasets.push({
+        label: `${ds.label} - ${mname}`,
+        data: ds.data,
+        borderColor: colors[colorIdx++],
+        backgroundColor: 'transparent',
+        tension: 0.3, pointRadius: 4,
+        yAxisID: yAxisId,
+      });
+    });
+  });
+
+  const scalesConfig = {};
+  Object.entries(yAxes).forEach(([id, label], i) => {
+    scalesConfig[id] = {
+      position: i === 0 ? 'left' : 'right',
+      ticks: { callback: v => label === '%' ? v + '%' : label + v }
+    };
+  });
+
+  // 自定义图表 tooltip 格式化（支持多轴单位）
+  const customTooltipCallbacks = {
+    label: function(context) {
+      const dsLabel = context.dataset.label || '';
+      const yId = context.dataset.yAxisID || 'y';
+      const axisLabel = yAxes[yId] || '';
+      const val = context.parsed.y;
+      if (val === null || val === undefined) return dsLabel + ': -';
+      let formatted;
+      if (axisLabel === '%') formatted = val.toFixed(2) + '%';
+      else if (axisLabel) formatted = axisLabel + val.toFixed(2);
+      else formatted = val.toFixed(4);
+      return dsLabel + ': ' + formatted;
+    }
+  };
+
+  chartInstances['customChart'] = new Chart(document.getElementById('customChart'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { callbacks: customTooltipCallbacks }
+      },
+      scales: scalesConfig
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// 表格渲染
+// ─────────────────────────────────────────────────────────────
+function renderTables(tables, metricDefs) {
+  const container = document.getElementById('tables-container');
+  const dtypeMap = {};
+  metricDefs.forEach(m => dtypeMap[m.name] = m);
+
+  container.innerHTML = tables.map(table => {
+    const cols = table.columns;
+    const header = cols.map(c => `<th>${c}</th>`).join('');
+    const rows = table.rows.map((row, ri) => {
+      const cells = cols.map(col => {
+        let val = row[col] ?? '-';
+        const isAnom = table.anomalies[col]?.includes(ri);
+        let display = val;
+        if (col in dtypeMap && val !== '' && val !== '-') {
+          const m = dtypeMap[col];
+          const num = parseFloat(val);
+          if (!isNaN(num)) {
+            if (m.type === 'percent') display = num.toFixed(2) + '%';
+            else if (m.type === 'currency') display = (m.currency||'') + num.toFixed(2);
+            else if (m.type === 'count') display = Math.round(num).toLocaleString();
+            else display = num + (m.unit||'');
+          }
+        }
+        return `<td class="${isAnom?'anomaly':''}">${display}</td>`;
+      }).join('');
+      return `<tr>${cells}</tr>`;
+    }).join('');
+
+    return `<p class="platform-title">📊 ${table.platform}</p>
+      <div class="table-wrapper">
+        <table><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>
+      </div>`;
+  }).join('<br>');
+}
+
+// ─────────────────────────────────────────────────────────────
+// 导出 Excel
+// ─────────────────────────────────────────────────────────────
+async function exportExcel() {
+  if (!analysisResult) { showToast('请先运行分析'); return; }
+  const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
+  const configName = document.getElementById('config-name-input').value || '导出';
+  try {
+    const res = await fetch('/api/export/excel', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ tables: analysisResult.tables, metrics: validMetrics, config_name: configName })
+    });
+    if (!res.ok) { showToast('❌ 导出失败'); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = res.headers.get('Content-Disposition')?.match(/filename=(.+)/)?.[1] || 'export.xlsx';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('✅ Excel 已导出');
+  } catch(e) {
+    showToast('❌ 导出失败：' + e.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Tab 切换
+// ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+// ─────────────────────────────────────────────────────────────
+// AI 文本分析
+// ─────────────────────────────────────────────────────────────
+async function runAIAnalysis() {
+  if (!analysisResult) { showToast('请先运行分析'); return; }
+
+  const apiKey = document.getElementById('ai-api-key').value.trim();
+  if (!apiKey) { showToast('请先填写 Anthropic API Key'); return; }
+
+  const btn = document.getElementById('ai-analyze-btn');
+  const container = document.getElementById('ai-analysis-content');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  container.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><p>正在分析投放数据，请稍候（约10-30秒）...</p></div>';
+
+  const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
+  const dataSummary = buildDataSummary(analysisResult, validMetrics);
+
+  try {
+    const res = await fetch('/api/ai-analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: apiKey, data_summary: dataSummary })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || '请求失败: ' + res.status);
+    }
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    container.innerHTML = '<div class="ai-report">' + renderMarkdown(data.result) + '</div>';
+  } catch(e) {
+    container.innerHTML = `<div class="ai-error">❌ 分析失败：${e.message}<br><small>请检查 API Key 是否正确，以及网络连接是否正常</small></div>`;
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+function buildDataSummary(result, metricDefs) {
+  const lines = [];
+  const dtypeMap = {};
+  metricDefs.forEach(m => dtypeMap[m.name] = m);
+
+  result.tables.forEach(table => {
+    lines.push(`【平台：${table.platform}】`);
+    lines.push(`数据行数：${table.rows.length} 条`);
+
+    // 各指标统计摘要
+    const metricCols = metricDefs.map(m => m.name).filter(n => table.columns.includes(n));
+    metricCols.forEach(col => {
+      const vals = table.rows.map(r => parseFloat(r[col])).filter(v => !isNaN(v));
+      if (!vals.length) return;
+      const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
+      const min = Math.min(...vals);
+      const max = Math.max(...vals);
+      const m = dtypeMap[col];
+      const fmt = v => {
+        if (m?.type === 'percent') return v.toFixed(2) + '%';
+        if (m?.type === 'currency') return (m.currency||'') + v.toFixed(2);
+        return v.toFixed(4);
+      };
+      lines.push(`  ${col}：平均=${fmt(avg)}，最低=${fmt(min)}，最高=${fmt(max)}`);
+
+      // 标注异常点
+      const anomIdxs = table.anomalies[col] || [];
+      if (anomIdxs.length) {
+        lines.push(`    ⚠️ 环比异常点（变化>50%）出现在第 ${anomIdxs.map(i=>i+1).join(',')} 行`);
+      }
+    });
+
+    // 时间列数据范围
+    const timeCol = table.columns[0];
+    if (table.rows.length > 0) {
+      const times = table.rows.map(r => r[timeCol]).filter(Boolean);
+      if (times.length > 1) lines.push(`  数据周期：${times[0]} ～ ${times[times.length-1]}`);
+    }
+    lines.push('');
+  });
+
+  return lines.join('\n');
+}
+
+function renderMarkdown(text) {
+  // 简单 Markdown 渲染
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>')
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, s => `<ul>${s}</ul>`)
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>')
+    .replace(/^(.)/,'<p>$1')
+    .replace(/(.)$/,'$1</p>');
+}
+
+// 页面加载时初始化
+loadSavedConfigs();
+</script>
+</body>
+</html>

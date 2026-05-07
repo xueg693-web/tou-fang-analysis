@@ -1,0 +1,6 @@
+uploads/
+exports/
+__pycache__/
+*.pyc
+.env
+config/metrics.json
