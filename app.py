@@ -56,24 +56,54 @@ def save_metrics_config(configs):
 def calculate_metrics(df, metric_defs):
     """
     计算自定义指标，返回新列字典。
-    metric_defs: [{name, numerator, denominator, type, currency?, unit?}, ...]
+    metric_defs: [{name, numerator, denominator, type, isFormula?, formula?, currency?, unit?}, ...]
     """
     result_cols = {}
     for m in metric_defs:
         name = m['name']
-        num = m['numerator']
-        den = m['denominator']
-        dtype = m['type']  # 'percent' | 'currency' | 'count' | 'custom'
+        dtype = m['type']
 
-        if num not in df.columns or den not in df.columns:
-            continue
+        if m.get('isFormula') and m.get('formula'):
+            raw = _eval_formula_series(df, m['formula'])
+            if raw is None:
+                continue
+        else:
+            num = m.get('numerator', '')
+            den = m.get('denominator', '')
+            if num not in df.columns or den not in df.columns:
+                continue
+            raw = df[num] / df[den].replace(0, float('nan'))
+            if dtype == 'percent':
+                raw = raw * 100
 
-        raw = df[num] / df[den].replace(0, float('nan'))
-
-        if dtype == 'percent':
-            raw = raw * 100
-        result_cols[name] = raw.round(4)
+        result_cols[name] = pd.to_numeric(raw, errors='coerce').round(4)
     return result_cols
+
+
+def _eval_formula_series(df, formula):
+    """
+    安全地对 DataFrame 整列求值公式。
+    公式中字段名用 {字段名} 包裹，支持 + - * / ( ) 和数字。
+    """
+    import re
+    fields = re.findall(r'\{([^}]+)\}', formula)
+    for f in fields:
+        if f not in df.columns:
+            return None
+    # 将 {字段名} 替换为 col_N 变量名，避免字段名含特殊字符
+    local_vars = {}
+    expr = formula
+    for i, f in enumerate(fields):
+        var = f'col_{i}'
+        expr = expr.replace('{' + f + '}', var)
+        local_vars[var] = pd.to_numeric(df[f], errors='coerce')
+    # 只允许安全字符：数字、运算符、括号、空格、col_N 变量名
+    if not re.match(r'^[\d\s\+\-\*/\(\)\.col_0-9]+$', expr):
+        return None
+    try:
+        return eval(expr, {"__builtins__": {}}, local_vars)  # noqa: S307
+    except Exception:
+        return None
 
 def detect_anomalies(series, threshold=0.5):
     """环比变化超过阈值视为异常，返回布尔 Series"""

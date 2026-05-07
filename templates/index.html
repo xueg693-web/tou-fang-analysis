@@ -126,6 +126,26 @@
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
+  /* 公式构建器弹窗 */
+  .formula-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center; z-index: 2000; }
+  .formula-modal { background: #fff; border-radius: 12px; padding: 24px;
+    width: 560px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  .formula-modal h3 { margin: 0 0 16px; font-size: 16px; color: #2c5f8a; }
+  .formula-field-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .formula-field-btn { padding: 4px 10px; background: #e8f0f8; border: 1px solid #b0c4de;
+    border-radius: 6px; font-size: 12px; cursor: pointer; color: #2c5f8a; }
+  .formula-field-btn:hover { background: #2c5f8a; color: #fff; }
+  .formula-op-btns { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .formula-op-btn { padding: 5px 12px; background: #f5f5f5; border: 1px solid #ddd;
+    border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600; }
+  .formula-op-btn:hover { background: #333; color: #fff; }
+  .formula-preview { background: #f8fafc; border: 1px solid #d0d9e8; border-radius: 8px;
+    padding: 10px 14px; font-size: 14px; min-height: 40px; color: #333;
+    font-family: monospace; word-break: break-all; margin-bottom: 12px; }
+  .formula-preview em { color: #2c5f8a; font-style: normal; font-weight: 600; }
+  .formula-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
   /* Toast */
   #toast { position: fixed; bottom: 24px; right: 24px; background: #333; color: #fff;
            padding: 10px 18px; border-radius: 8px; font-size: 14px; display: none;
@@ -170,7 +190,57 @@
       <div>数据类型</div><div>货币/单位</div><div></div><div></div>
     </div>
     <div id="metrics-list"></div>
-    <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="addMetricRow()">＋ 添加指标</button>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" onclick="addMetricRow()">＋ 简单指标（分子÷分母）</button>
+      <button class="btn btn-secondary btn-sm" onclick="openFormulaBuilder(-1)">🧮 自定义公式指标</button>
+    </div>
+  </div>
+
+  <!-- 公式构建器弹窗 -->
+  <div id="formula-modal-overlay" class="formula-modal-overlay" style="display:none" onclick="if(event.target===this)closeFormulaBuilder()">
+    <div class="formula-modal">
+      <h3>🧮 自定义公式指标</h3>
+      <div style="margin-bottom:8px">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">指标名称</label>
+        <input type="text" id="fb-name" placeholder="如：ROI、CPM、ROAS..." style="width:100%">
+      </div>
+      <div style="margin-bottom:8px">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">数据类型</label>
+        <select id="fb-type" style="width:160px">
+          <option value="percent">百分比 (%)</option>
+          <option value="currency">金额</option>
+          <option value="count">数量</option>
+          <option value="custom">自定义</option>
+        </select>
+        <input type="text" id="fb-unit" placeholder="货币/单位..." style="width:100px;margin-left:8px">
+      </div>
+      <div style="margin-bottom:6px">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px">点击字段插入公式</label>
+        <div id="fb-field-btns" class="formula-field-btns"></div>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px">运算符</label>
+        <div class="formula-op-btns">
+          <button class="formula-op-btn" onclick="fbInsert('+')">+</button>
+          <button class="formula-op-btn" onclick="fbInsert('-')">−</button>
+          <button class="formula-op-btn" onclick="fbInsert('*')">×</button>
+          <button class="formula-op-btn" onclick="fbInsert('/')">÷</button>
+          <button class="formula-op-btn" onclick="fbInsert('(')"> ( </button>
+          <button class="formula-op-btn" onclick="fbInsert(')')"> ) </button>
+          <button class="formula-op-btn" onclick="fbInsertNum()">数字</button>
+          <button class="formula-op-btn" style="background:#fff0f0;border-color:#ffcdd2;color:#c0392b" onclick="fbBackspace()">⌫</button>
+          <button class="formula-op-btn" style="background:#fff0f0;border-color:#ffcdd2;color:#c0392b" onclick="fbClear()">清空</button>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">公式预览</label>
+        <div id="fb-preview" class="formula-preview">—</div>
+      </div>
+      <div class="formula-modal-actions">
+        <button class="btn btn-secondary btn-sm" onclick="closeFormulaBuilder()">取消</button>
+        <button class="btn btn-primary btn-sm" onclick="confirmFormulaBuilder()">确认添加</button>
+      </div>
+    </div>
   </div>
 
   <!-- 操作按钮 -->
@@ -341,7 +411,8 @@ function addMetricRow(preset={}) {
   const row = {
     name: preset.name || '', numerator: preset.numerator || '',
     denominator: preset.denominator || '', type: preset.type || 'percent',
-    currency: preset.currency || '', unit: preset.unit || ''
+    currency: preset.currency || '', unit: preset.unit || '',
+    formula: preset.formula || '', isFormula: preset.isFormula || false
   };
   metricRows.push(row);
   renderMetricRows();
@@ -350,7 +421,32 @@ function addMetricRow(preset={}) {
 function renderMetricRows() {
   const container = document.getElementById('metrics-list');
   const opts = allColumns.map(c => `<option value="${c}">${c}</option>`).join('');
-  container.innerHTML = metricRows.map((m, i) => `
+  container.innerHTML = metricRows.map((m, i) => {
+    if (m.isFormula) {
+      const displayFormula = (m.formula || '').replace(/\{([^}]+)\}/g, '[$1]');
+      return `
+    <div class="metric-row" id="mrow-${i}" style="grid-template-columns:160px 1fr 130px 100px auto">
+      <input type="text" value="${m.name}" placeholder="指标名称"
+        oninput="metricRows[${i}].name=this.value">
+      <div style="font-size:12px;font-family:monospace;color:#2c5f8a;background:#f0f6ff;
+        border-radius:6px;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+        title="${m.formula}">${displayFormula || '（空公式）'}</div>
+      <select onchange="metricRows[${i}].type=this.value;renderMetricRows()">
+        <option value="percent" ${m.type==='percent'?'selected':''}>百分比 (%)</option>
+        <option value="currency" ${m.type==='currency'?'selected':''}>金额</option>
+        <option value="count" ${m.type==='count'?'selected':''}>数量</option>
+        <option value="custom" ${m.type==='custom'?'selected':''}>自定义</option>
+      </select>
+      <input type="text" placeholder="${m.type==='currency'?'USD/CNY...':'单位...'}"
+        value="${m.type==='currency'?m.currency:m.unit}"
+        oninput="${m.type==='currency'?`metricRows[${i}].currency=this.value`:`metricRows[${i}].unit=this.value`}">
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-secondary btn-sm" onclick="openFormulaBuilder(${i})">编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
+      </div>
+    </div>`;
+    }
+    return `
     <div class="metric-row" id="mrow-${i}">
       <input type="text" value="${m.name}" placeholder="指标名称"
         oninput="metricRows[${i}].name=this.value">
@@ -371,10 +467,11 @@ function renderMetricRows() {
         oninput="${m.type==='currency'?`metricRows[${i}].currency=this.value`:`metricRows[${i}].unit=this.value`}">
       <div></div>
       <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
-    </div>
-  `).join('');
-  // 恢复 select 选中值
+    </div>`;
+  }).join('');
+  // 恢复 select 选中值（仅简单指标）
   metricRows.forEach((m, i) => {
+    if (m.isFormula) return;
     const row = document.getElementById(`mrow-${i}`);
     if (!row) return;
     const selects = row.querySelectorAll('select');
@@ -389,6 +486,125 @@ function removeMetricRow(idx) {
 }
 
 function refreshMetricFieldOptions() { renderMetricRows(); }
+
+// ─────────────────────────────────────────────────────────────
+// 公式构建器
+// ─────────────────────────────────────────────────────────────
+let fbEditIdx = -1;   // -1 = 新建，>=0 = 编辑已有行
+let fbTokens = [];    // 公式 token 数组，每项是字符串
+
+function openFormulaBuilder(idx) {
+  fbEditIdx = idx;
+  fbTokens = [];
+  const overlay = document.getElementById('formula-modal-overlay');
+  const nameEl = document.getElementById('fb-name');
+  const typeEl = document.getElementById('fb-type');
+  const unitEl = document.getElementById('fb-unit');
+
+  if (idx >= 0 && metricRows[idx] && metricRows[idx].isFormula) {
+    const m = metricRows[idx];
+    nameEl.value = m.name;
+    typeEl.value = m.type;
+    unitEl.value = m.type === 'currency' ? m.currency : m.unit;
+    // 解析已有公式为 tokens
+    fbTokens = m.formula ? m.formula.split(/(?<=\})|(?=\{)|(?<=[+\-*/()])|(?=[+\-*/()])/).filter(t => t.trim()) : [];
+  } else {
+    nameEl.value = '';
+    typeEl.value = 'percent';
+    unitEl.value = '';
+  }
+
+  // 渲染字段按钮
+  const fieldBtns = document.getElementById('fb-field-btns');
+  if (allColumns.length) {
+    fieldBtns.innerHTML = allColumns.map(c =>
+      `<button class="formula-field-btn" onclick="fbInsertField('${c.replace(/'/g,"\\'")}')">
+        ${c}
+      </button>`
+    ).join('');
+  } else {
+    fieldBtns.innerHTML = '<span style="font-size:12px;color:#aaa">请先上传 CSV 文件</span>';
+  }
+
+  fbUpdatePreview();
+  overlay.style.display = 'flex';
+  nameEl.focus();
+}
+
+function closeFormulaBuilder() {
+  document.getElementById('formula-modal-overlay').style.display = 'none';
+}
+
+function fbInsertField(fieldName) {
+  fbTokens.push(`{${fieldName}}`);
+  fbUpdatePreview();
+}
+
+function fbInsert(op) {
+  const opMap = {'×': '*', '÷': '/'};
+  fbTokens.push(opMap[op] || op);
+  fbUpdatePreview();
+}
+
+function fbInsertNum() {
+  const n = prompt('输入数字：');
+  if (n !== null && n.trim() !== '' && !isNaN(Number(n.trim()))) {
+    fbTokens.push(n.trim());
+    fbUpdatePreview();
+  }
+}
+
+function fbBackspace() {
+  fbTokens.pop();
+  fbUpdatePreview();
+}
+
+function fbClear() {
+  fbTokens = [];
+  fbUpdatePreview();
+}
+
+function fbUpdatePreview() {
+  const el = document.getElementById('fb-preview');
+  if (!fbTokens.length) {
+    el.textContent = '（点击字段和运算符来构建公式）';
+    return;
+  }
+  const displayMap = {'*': '×', '/': '÷'};
+  el.innerHTML = fbTokens.map(t => {
+    if (t.startsWith('{') && t.endsWith('}')) {
+      return `<em>${t.slice(1,-1)}</em>`;
+    }
+    return displayMap[t] || t;
+  }).join(' ');
+}
+
+function confirmFormulaBuilder() {
+  const name = document.getElementById('fb-name').value.trim();
+  const type = document.getElementById('fb-type').value;
+  const unit = document.getElementById('fb-unit').value.trim();
+  const formula = fbTokens.join('');
+
+  if (!name) { showToast('请填写指标名称'); return; }
+  if (!formula) { showToast('请构建公式'); return; }
+
+  const row = {
+    name, type,
+    currency: type === 'currency' ? unit : '',
+    unit: type !== 'currency' ? unit : '',
+    formula, isFormula: true,
+    numerator: '', denominator: ''
+  };
+
+  if (fbEditIdx >= 0) {
+    metricRows[fbEditIdx] = row;
+  } else {
+    metricRows.push(row);
+  }
+
+  renderMetricRows();
+  closeFormulaBuilder();
+}
 
 // ─────────────────────────────────────────────────────────────
 // 已保存配置管理
