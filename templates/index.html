@@ -446,30 +446,6 @@ function autoFillUnit(idx, type) {
   else { metricRows[idx].currency = ''; }
 }
 
-
-function renderMetricRows() {
-  const container = document.getElementById('metrics-list');
-  const opts = allColumns.map(c => `<option value="${c}">${c}</option>`).join('');
-  container.innerHTML = metricRows.map((m, i) => {
-    if (m.isFormula) {
-      const displayFormula = (m.formula || '').replace(/\{([^}]+)\}/g, '[$1]');
-      return `
-    <div class="metric-row" id="mrow-${i}" style="grid-template-columns:160px 1fr 130px 100px auto">
-      <input type="text" value="${m.name}" placeholder="指标名称"
-        oninput="metricRows[${i}].name=this.value">
-      <div style="font-size:12px;font-family:monospace;color:#2c5f8a;background:#f0f6ff;
-        border-radius:6px;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
-        title="${m.formula}">${displayFormula || '（空公式）'}</div>
-      <select onchange="metricRows[${i}].type=this.value;renderMetricRows()">
-        <option value="percent" ${m.type==='percent'?'selected':''}>百分比 (%)</option>
-        <option value="currency" ${m.type==='currency'?'selected':''}>金额</option>
-        <option value="count" ${m.type==='count'?'selected':''}>数量</option>
-        <option value="custom" ${m.type==='custom'?'selected':''}>自定义</option>
-      </select>
-      ${unitFieldHtml(m, i)}
-      <div style="display:flex;gap:4px">
-        <button class="btn btn-secondary btn-sm" onclick="openFormulaBuilder(${i})">编辑</button>
-        <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
       </div>
     </div>`;
     }
