@@ -446,8 +446,19 @@ function autoFillUnit(idx, type) {
   else { metricRows[idx].currency = ''; }
 }
 
-      </div>
-    </div>`;
+function renderMetricRows() {
+  const container = document.getElementById('metrics-list');
+  const opts = allColumns.map(c => `<option value="${c}">${c}</option>`).join('');
+  container.innerHTML = metricRows.map((m, i) => {
+    if (m.isFormula) {
+      return `<div class="metric-row" id="mrow-${i}">
+        <input type="text" value="${m.name}" placeholder="指标名称"
+          oninput="metricRows[${i}].name=this.value">
+        <span style="font-size:12px;color:#666;padding:0 4px">公式: ${m.formula}</span>
+        ${unitFieldHtml(m, i)}
+        <div></div>
+        <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
+      </div>`;
     }
     return `
     <div class="metric-row" id="mrow-${i}">
