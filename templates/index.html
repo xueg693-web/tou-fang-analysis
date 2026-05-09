@@ -182,6 +182,7 @@
     <div class="config-manage">
       <span style="font-size:13px;color:#666">已保存配置：</span>
       <div id="saved-configs"></div>
+      <button class="btn btn-secondary btn-sm" onclick="applyBaseConfig()">📌 基础配置</button>
       <input type="text" id="config-name-input" placeholder="新配置名称..." style="width:160px">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentConfig()">💾 保存当前配置</button>
     </div>
@@ -264,8 +265,10 @@
 
     <!-- 图表 Tab -->
     <div id="tab-charts" class="tab-content active">
+      <!-- 分组图表 -->
+      <div class="charts-grid" id="charts-grid"></div>
       <!-- 自定义图表 -->
-      <div class="card">
+      <div class="card" style="margin-top:20px">
         <h2>🎨 自定义对比图</h2>
         <div class="custom-chart-builder">
           <label>选择指标：</label>
@@ -276,8 +279,6 @@
           <canvas id="customChart"></canvas>
         </div>
       </div>
-      <!-- 分组图表 -->
-      <div class="charts-grid" id="charts-grid"></div>
     </div>
 
     <!-- 表格 Tab -->
@@ -408,15 +409,43 @@ function renderFieldPreview() {
 // 指标配置行
 // ─────────────────────────────────────────────────────────────
 function addMetricRow(preset={}) {
+  const type = preset.type || 'percent';
   const row = {
     name: preset.name || '', numerator: preset.numerator || '',
-    denominator: preset.denominator || '', type: preset.type || 'percent',
-    currency: preset.currency || '', unit: preset.unit || '',
+    denominator: preset.denominator || '', type,
+    currency: preset.currency || (type === 'currency' ? 'USD' : ''),
+    unit: preset.unit || (type === 'percent' ? '%' : ''),
     formula: preset.formula || '', isFormula: preset.isFormula || false
   };
   metricRows.push(row);
   renderMetricRows();
 }
+
+function unitFieldHtml(m, i) {
+  if (m.type === 'currency') {
+    return `<input type="text" value="USD" readonly
+      style="background:#f5f5f5;color:#888;cursor:not-allowed"
+      oninput="metricRows[${i}].currency=this.value">`;
+  }
+  if (m.type === 'percent') {
+    return `<input type="text" value="%" readonly
+      style="background:#f5f5f5;color:#888;cursor:not-allowed"
+      oninput="metricRows[${i}].unit=this.value">`;
+  }
+  if (m.type === 'count') {
+    return `<input type="text" value="" placeholder="单位..."
+      oninput="metricRows[${i}].unit=this.value">`;
+  }
+  return `<input type="text" placeholder="单位..." value="${m.unit||''}"
+    oninput="metricRows[${i}].unit=this.value">`;
+}
+
+function autoFillUnit(idx, type) {
+  if (type === 'currency') { metricRows[idx].currency = 'USD'; metricRows[idx].unit = ''; }
+  else if (type === 'percent') { metricRows[idx].unit = '%'; metricRows[idx].currency = ''; }
+  else { metricRows[idx].currency = ''; }
+}
+
 
 function renderMetricRows() {
   const container = document.getElementById('metrics-list');
@@ -437,9 +466,7 @@ function renderMetricRows() {
         <option value="count" ${m.type==='count'?'selected':''}>数量</option>
         <option value="custom" ${m.type==='custom'?'selected':''}>自定义</option>
       </select>
-      <input type="text" placeholder="${m.type==='currency'?'USD/CNY...':'单位...'}"
-        value="${m.type==='currency'?m.currency:m.unit}"
-        oninput="${m.type==='currency'?`metricRows[${i}].currency=this.value`:`metricRows[${i}].unit=this.value`}">
+      ${unitFieldHtml(m, i)}
       <div style="display:flex;gap:4px">
         <button class="btn btn-secondary btn-sm" onclick="openFormulaBuilder(${i})">编辑</button>
         <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
@@ -456,15 +483,13 @@ function renderMetricRows() {
       <select onchange="metricRows[${i}].denominator=this.value">
         <option value="">--选择分母--</option>${opts}
       </select>
-      <select onchange="metricRows[${i}].type=this.value;renderMetricRows()">
+      <select onchange="metricRows[${i}].type=this.value;autoFillUnit(${i},this.value);renderMetricRows()">
         <option value="percent" ${m.type==='percent'?'selected':''}>百分比 (%)</option>
         <option value="currency" ${m.type==='currency'?'selected':''}>金额</option>
         <option value="count" ${m.type==='count'?'selected':''}>数量</option>
         <option value="custom" ${m.type==='custom'?'selected':''}>自定义</option>
       </select>
-      <input type="text" placeholder="${m.type==='currency'?'USD/CNY...':'单位...'}"
-        value="${m.type==='currency'?m.currency:m.unit}"
-        oninput="${m.type==='currency'?`metricRows[${i}].currency=this.value`:`metricRows[${i}].unit=this.value`}">
+      ${unitFieldHtml(m, i)}
       <div></div>
       <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
     </div>`;
@@ -604,6 +629,24 @@ function confirmFormulaBuilder() {
 
   renderMetricRows();
   closeFormulaBuilder();
+}
+
+// ─────────────────────────────────────────────────────────────
+// 基础配置
+// ─────────────────────────────────────────────────────────────
+const BASE_CONFIG = [
+  { name: '注册率',   numerator: 'register_success_events', denominator: 'installs',                   type: 'percent',  unit: '%',   currency: '' },
+  { name: '下单率',   numerator: 'first_time_events',        denominator: 'register_success_events',    type: 'percent',  unit: '%',   currency: '' },
+  { name: '成交率',   numerator: 'first_time_paid_events',   denominator: 'first_time_events',          type: 'percent',  unit: '%',   currency: '' },
+  { name: '注册成本', numerator: 'cost',                     denominator: 'register_success_events',    type: 'currency', unit: '',    currency: 'USD' },
+  { name: '下单成本', numerator: 'cost',                     denominator: 'first_time_events',          type: 'currency', unit: '',    currency: 'USD' },
+  { name: '成交',     numerator: 'cost',                     denominator: 'first_trade_success_events', type: 'currency', unit: '',    currency: 'USD' },
+];
+
+function applyBaseConfig() {
+  metricRows = BASE_CONFIG.map(m => ({...m, formula: '', isFormula: false}));
+  renderMetricRows();
+  showToast('✅ 已加载基础配置');
 }
 
 // ─────────────────────────────────────────────────────────────
