@@ -250,7 +250,18 @@
     <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
       <div>
         <div style="font-size:13px;color:#666;margin-bottom:6px;font-weight:600">项目（app）</div>
-        <div id="app-filter-checkboxes" style="display:flex;flex-wrap:wrap;gap:6px;max-width:600px"></div>
+        <div style="position:relative;display:inline-block;min-width:220px">
+          <div id="app-dropdown-btn" onclick="toggleAppDropdown()" style="cursor:pointer;padding:6px 32px 6px 10px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px;background:#fff;user-select:none;min-height:32px;line-height:20px">
+            <span id="app-dropdown-label">全部项目</span>
+            <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);color:#888">▾</span>
+          </div>
+          <div id="app-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:220px;max-height:260px;overflow-y:auto;background:#fff;border:1px solid #d0d9e8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:999;padding:6px 0">
+            <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:600;border-bottom:1px solid #f0f0f0;margin-bottom:2px">
+              <input type="checkbox" id="app-select-all" onchange="toggleSelectAll(this)" style="width:14px;height:14px"> 全选
+            </label>
+            <div id="app-filter-options"></div>
+          </div>
+        </div>
       </div>
       <div>
         <div style="font-size:13px;color:#666;margin-bottom:6px;font-weight:600">日期范围</div>
@@ -729,15 +740,19 @@ async function applyConfig(name) {
 function renderFilterUI() {
   // 收集所有 app 值
   const allApps = [...new Set(uploadedFiles.flatMap(f => f.app_values || []))].sort();
-  const el = document.getElementById('app-filter-checkboxes');
-  if (allApps.length) {
-    el.innerHTML = allApps.map(a =>
-      `<label style="display:inline-flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;
-        background:#f0f6ff;border:1px solid #b0c4de;border-radius:16px;padding:3px 10px">
-        <input type="checkbox" value="${a}" checked> ${a}
-      </label>`
-    ).join('');
+  const container = document.getElementById('app-filter-options');
+  if (allApps.length && container) {
+    container.innerHTML = '';
+    allApps.forEach(a => {
+      const label = document.createElement('label');
+      label.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px;white-space:nowrap';
+      label.innerHTML = `<input type="checkbox" value="${a}" checked onchange="syncSelectAll()" style="width:14px;height:14px"> ${a}`;
+      container.appendChild(label);
+    });
     document.getElementById('filter-card').style.display = 'block';
+    // 同步全选复选框状态
+    syncSelectAll();
+    updateDropdownLabel();
   }
   // 设置日期范围默认值
   const allDates = [...new Set(uploadedFiles.flatMap(f => f.date_values || []))].sort();
@@ -745,6 +760,45 @@ function renderFilterUI() {
     document.getElementById('filter-date-start').value = allDates[0];
     document.getElementById('filter-date-end').value = allDates[allDates.length - 1];
   }
+}
+
+function toggleAppDropdown() {
+  const menu = document.getElementById('app-dropdown-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+// 点击下拉菜单外部时关闭
+document.addEventListener('click', function(e) {
+  const btn = document.getElementById('app-dropdown-btn');
+  const menu = document.getElementById('app-dropdown-menu');
+  if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+    menu.style.display = 'none';
+    updateDropdownLabel();
+  }
+});
+
+function toggleSelectAll(cb) {
+  const checks = document.querySelectorAll('#app-filter-options input[type=checkbox]');
+  checks.forEach(c => c.checked = cb.checked);
+  updateDropdownLabel();
+}
+
+function syncSelectAll() {
+  const checks = [...document.querySelectorAll('#app-filter-options input[type=checkbox]')];
+  const allChecked = checks.every(c => c.checked);
+  const selectAllCb = document.getElementById('app-select-all');
+  if (selectAllCb) selectAllCb.checked = allChecked;
+  updateDropdownLabel();
+}
+
+function updateDropdownLabel() {
+  const checks = [...document.querySelectorAll('#app-filter-options input[type=checkbox]')];
+  const selected = checks.filter(c => c.checked);
+  const label = document.getElementById('app-dropdown-label');
+  if (!label) return;
+  if (selected.length === 0) label.textContent = '未选择';
+  else if (selected.length === checks.length) label.textContent = '全部项目';
+  else label.textContent = `已选 ${selected.length} 个项目`;
 }
 
 function clearDateFilter() {
@@ -758,7 +812,7 @@ async function runAnalysis() {
   if (!validMetrics.length) { showToast('请至少配置一个完整的指标'); return; }
 
   // 读取筛选条件
-  const checkedApps = [...document.querySelectorAll('#app-filter-checkboxes input:checked')].map(i => i.value);
+  const checkedApps = [...document.querySelectorAll('#app-filter-options input[type=checkbox]:checked')].map(c => c.value);
   const dateStart = document.getElementById('filter-date-start').value;
   const dateEnd = document.getElementById('filter-date-end').value;
 
