@@ -244,6 +244,26 @@
     </div>
   </div>
 
+  <!-- 筛选区 -->
+  <div class="card" id="filter-card" style="display:none">
+    <h2>🔍 数据筛选</h2>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+      <div>
+        <div style="font-size:13px;color:#666;margin-bottom:6px;font-weight:600">项目（app）</div>
+        <div id="app-filter-checkboxes" style="display:flex;flex-wrap:wrap;gap:6px;max-width:600px"></div>
+      </div>
+      <div>
+        <div style="font-size:13px;color:#666;margin-bottom:6px;font-weight:600">日期范围</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="date" id="filter-date-start" style="padding:5px 8px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
+          <span style="color:#888">至</span>
+          <input type="date" id="filter-date-end" style="padding:5px 8px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
+          <button class="btn btn-secondary btn-sm" onclick="clearDateFilter()">清空</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 操作按钮 -->
   <div class="card" style="padding:16px">
     <div class="action-row">
@@ -326,6 +346,9 @@ let allColumns = [];      // 所有文件的字段并集
 let metricRows = [];      // [{name, numerator, denominator, type, currency, unit}, ...]
 let analysisResult = null;
 let chartInstances = {};  // canvas id → Chart 实例
+let allAppValues = [];    // 所有 app 值
+let allDateValues = [];   // 所有日期值
+let selectedApps = new Set();  // 已选 app
 
 // ─────────────────────────────────────────────────────────────
 // 工具
@@ -380,6 +403,7 @@ async function handleFiles(files) {
     renderFieldPreview();
     refreshMetricFieldOptions();
     loadSavedConfigs();
+    renderFilterUI();
   } catch(e) {
     showToast('❌ 上传失败：' + e.message);
   }
@@ -702,10 +726,41 @@ async function applyConfig(name) {
 // ─────────────────────────────────────────────────────────────
 // 运行分析
 // ─────────────────────────────────────────────────────────────
+function renderFilterUI() {
+  // 收集所有 app 值
+  const allApps = [...new Set(uploadedFiles.flatMap(f => f.app_values || []))].sort();
+  const el = document.getElementById('app-filter-checkboxes');
+  if (allApps.length) {
+    el.innerHTML = allApps.map(a =>
+      `<label style="display:inline-flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;
+        background:#f0f6ff;border:1px solid #b0c4de;border-radius:16px;padding:3px 10px">
+        <input type="checkbox" value="${a}" checked> ${a}
+      </label>`
+    ).join('');
+    document.getElementById('filter-card').style.display = 'block';
+  }
+  // 设置日期范围默认值
+  const allDates = [...new Set(uploadedFiles.flatMap(f => f.date_values || []))].sort();
+  if (allDates.length) {
+    document.getElementById('filter-date-start').value = allDates[0];
+    document.getElementById('filter-date-end').value = allDates[allDates.length - 1];
+  }
+}
+
+function clearDateFilter() {
+  document.getElementById('filter-date-start').value = '';
+  document.getElementById('filter-date-end').value = '';
+}
+
 async function runAnalysis() {
   if (!uploadedFiles.length) { showToast('请先上传 CSV 文件'); return; }
   const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
   if (!validMetrics.length) { showToast('请至少配置一个完整的指标'); return; }
+
+  // 读取筛选条件
+  const checkedApps = [...document.querySelectorAll('#app-filter-checkboxes input:checked')].map(i => i.value);
+  const dateStart = document.getElementById('filter-date-start').value;
+  const dateEnd = document.getElementById('filter-date-end').value;
 
   document.getElementById('analyze-btn').classList.add('loading');
   try {
@@ -714,7 +769,10 @@ async function runAnalysis() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         files: uploadedFiles.map(f => ({filename: f.filename, platform: f.platform, time_column: f.time_column})),
-        metrics: validMetrics
+        metrics: validMetrics,
+        filter_apps: checkedApps,
+        filter_date_start: dateStart,
+        filter_date_end: dateEnd,
       })
     });
     if (!res.ok) { showToast('❌ 分析失败: ' + res.status); return; }

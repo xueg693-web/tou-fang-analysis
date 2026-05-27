@@ -152,6 +152,11 @@ def upload_csv():
             return jsonify({'error': f'解析 {filename} 失败: {str(e)}'}), 400
 
         time_col = detect_time_column(list(df.columns))
+        # 提取可筛选的 app 列表和日期范围
+        app_values = sorted(df['app'].dropna().unique().tolist()) if 'app' in df.columns else []
+        date_values = []
+        if time_col and time_col in df.columns:
+            date_values = sorted(df[time_col].dropna().astype(str).unique().tolist())
         all_data.append({
             'filename': filename,
             'platform': filename.replace('.csv', ''),
@@ -159,6 +164,8 @@ def upload_csv():
             'time_column': time_col,
             'rows': len(df),
             'preview': df.head(3).fillna('').to_dict(orient='records'),
+            'app_values': app_values,
+            'date_values': date_values,
         })
 
     if not all_data:
@@ -172,6 +179,15 @@ def analyze():
     payload = request.get_json()
     files_info = payload.get('files', [])        # [{filename, platform, time_column}, ...]
     metric_defs = payload.get('metrics', [])     # 来自前端的指标定义列表
+    filter_apps = payload.get('filter_apps', [])        # 筛选的 app 列表，空=全部
+    filter_date_start = payload.get('filter_date_start', '')  # 日期起始
+    filter_date_end = payload.get('filter_date_end', '')      # 日期结束
+
+    # 关键展示列（优先展示，其余隐藏）
+    KEY_COLS = {'day', 'week', 'date', 'period', 'app', 'campaign_network',
+                'channel', 'installs', 'register_success_events',
+                'first_time_events', 'first_time_paid_events', 'cost',
+                '周', '日期', '项目', '广告'}
 
     if not files_info:
         return jsonify({'error': '请先上传 CSV 文件'}), 400
@@ -192,6 +208,21 @@ def analyze():
             df = pd.read_csv(csv_path)
         except Exception as e:
             continue
+
+        # 按 app 筛选
+        if filter_apps and 'app' in df.columns:
+            df = df[df['app'].astype(str).isin(filter_apps)]
+
+        # 按日期范围筛选
+        if time_col and time_col in df.columns:
+            if filter_date_start:
+                df = df[df[time_col].astype(str) >= filter_date_start]
+            if filter_date_end:
+                df = df[df[time_col].astype(str) <= filter_date_end]
+
+        if df.empty:
+            continue
+
         if time_col and time_col in df.columns:
             labels = df[time_col].astype(str).tolist()
         else:
@@ -228,9 +259,10 @@ def analyze():
             anom_mask = detect_anomalies(df[col])
             anomalies[col] = [i for i, v in enumerate(anom_mask) if v]
 
-        # 构建表格数据
+        # 构建表格数据（只展示关键列 + 计算指标列）
+        metric_col_names = [m['name'] for m in metric_defs if m['name'] in df.columns]
         display_cols = ([time_col] if time_col else []) + \
-                       [c for c in df.columns if c != time_col]
+                       [c for c in df.columns if c != time_col and (c in KEY_COLS or c in metric_col_names)]
         table_rows = df[display_cols].fillna('').to_dict(orient='records')
         tables_data.append({
             'platform': platform,
