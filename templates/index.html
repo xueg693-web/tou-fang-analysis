@@ -288,6 +288,17 @@
 
   <!-- 结果区 -->
   <div id="results-section" style="display:none">
+    <!-- 指标显示开关 -->
+    <div class="card" id="metric-toggle-card" style="padding:14px 20px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:600;color:#444;white-space:nowrap">📌 指标显示：</span>
+        <div id="metric-toggle-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;flex:1"></div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn btn-secondary btn-sm" onclick="setAllMetricsVisible(true)">全选</button>
+          <button class="btn btn-secondary btn-sm" onclick="setAllMetricsVisible(false)">全不选</button>
+        </div>
+      </div>
+    </div>
     <div class="tabs">
       <div class="tab active" onclick="switchTab('charts')">📈 图表分析</div>
       <div class="tab" onclick="switchTab('table')">📋 数据表格</div>
@@ -360,6 +371,7 @@ let chartInstances = {};  // canvas id → Chart 实例
 let allAppValues = [];    // 所有 app 值
 let allDateValues = [];   // 所有日期值
 let selectedApps = new Set();  // 已选 app
+let visibleMetrics = new Set(); // 当前可见的衍生指标名（开关控制）
 
 // ─────────────────────────────────────────────────────────────
 // 工具
@@ -735,6 +747,45 @@ async function applyConfig(name) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// 指标显示开关
+// ─────────────────────────────────────────────────────────────
+function renderMetricToggles(metricDefs) {
+  const el = document.getElementById('metric-toggle-checkboxes');
+  el.innerHTML = metricDefs.map(m =>
+    `<label style="display:inline-flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;
+      background:#f0f6ff;border:1px solid #b0c4de;border-radius:14px;padding:3px 10px;white-space:nowrap">
+      <input type="checkbox" value="${m.name}" checked
+        onchange="syncMetricToggle('${m.name}', this.checked)"
+        style="width:13px;height:13px"> ${m.name}
+    </label>`
+  ).join('');
+}
+
+function syncMetricToggle(name, checked) {
+  if (checked) visibleMetrics.add(name);
+  else visibleMetrics.delete(name);
+
+  // 同步自定义对比图那边同名的 checkbox
+  const customCb = document.querySelector(`#custom-metric-checkboxes input[value="${CSS.escape(name)}"]`);
+  if (customCb) customCb.checked = checked;
+
+  // 实时更新图表和表格
+  if (analysisResult) {
+    const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
+    renderCharts(analysisResult.charts, validMetrics);
+    renderTables(analysisResult.tables, validMetrics);
+  }
+}
+
+function setAllMetricsVisible(show) {
+  const cbs = document.querySelectorAll('#metric-toggle-checkboxes input[type=checkbox]');
+  cbs.forEach(cb => {
+    cb.checked = show;
+    syncMetricToggle(cb.value, show);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
 // 运行分析
 // ─────────────────────────────────────────────────────────────
 function renderFilterUI() {
@@ -834,6 +885,9 @@ async function runAnalysis() {
     if (data.error) { showToast('❌ ' + data.error); return; }
     analysisResult = data;
     document.getElementById('results-section').style.display = 'block';
+    // 初始化指标显示开关（全部可见）
+    visibleMetrics = new Set(validMetrics.map(m => m.name));
+    renderMetricToggles(validMetrics);
     renderCharts(data.charts, validMetrics);
     renderTables(data.tables, validMetrics);
     renderCustomChartBuilder(validMetrics);
@@ -851,9 +905,10 @@ function renderCharts(charts, metricDefs) {
   const grid = document.getElementById('charts-grid');
   grid.innerHTML = '';
 
-  // 按数据类型分组
+  // 按数据类型分组，过滤掉不可见的指标
   const groups = {};
   for (const [mname, cdata] of Object.entries(charts)) {
+    if (!visibleMetrics.has(mname)) continue;
     const dtype = cdata.type || 'count';
     if (!groups[dtype]) groups[dtype] = [];
     groups[dtype].push({ name: mname, ...cdata });
@@ -924,7 +979,8 @@ function renderCustomChartBuilder(metricDefs) {
   const el = document.getElementById('custom-metric-checkboxes');
   el.innerHTML = metricDefs.map(m =>
     `<label style="font-size:13px;cursor:pointer">
-      <input type="checkbox" value="${m.name}"> ${m.name}
+      <input type="checkbox" value="${m.name}" ${visibleMetrics.has(m.name) ? 'checked' : ''}
+        onchange="syncMetricToggle('${m.name}', this.checked)"> ${m.name}
     </label>`
   ).join('');
 }
@@ -1019,9 +1075,12 @@ function renderTables(tables, metricDefs) {
   const container = document.getElementById('tables-container');
   const dtypeMap = {};
   metricDefs.forEach(m => dtypeMap[m.name] = m);
+  // 衍生指标名集合（只过滤这些列）
+  const metricNames = new Set(metricDefs.map(m => m.name));
 
   container.innerHTML = tables.map(table => {
-    const cols = table.columns;
+    // 过滤列：非衍生指标列始终显示，衍生指标列按 visibleMetrics 过滤
+    const cols = table.columns.filter(c => !metricNames.has(c) || visibleMetrics.has(c));
     const header = cols.map(c => `<th>${c}</th>`).join('');
     const rows = table.rows.map((row, ri) => {
       const cells = cols.map(col => {
