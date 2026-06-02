@@ -14,13 +14,11 @@
   header h1 { font-size: 20px; }
   .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
 
-  /* 卡片 */
   .card { background: #fff; border-radius: 10px; padding: 20px;
           box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
   .card h2 { font-size: 15px; color: #2c5f8a; margin-bottom: 14px;
              border-bottom: 2px solid #e8f0f8; padding-bottom: 8px; }
 
-  /* 上传区 */
   #dropzone { border: 2px dashed #b0c4de; border-radius: 8px; padding: 32px;
               text-align: center; cursor: pointer; transition: border-color .2s; }
   #dropzone.dragover { border-color: #2c5f8a; background: #f0f6ff; }
@@ -31,7 +29,6 @@
               padding: 4px 12px; font-size: 13px; margin: 4px; }
   .file-tag span { cursor: pointer; color: #999; }
 
-  /* 按钮 */
   .btn { padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer;
          font-size: 14px; transition: opacity .2s; }
   .btn-primary { background: #2c5f8a; color: #fff; }
@@ -40,7 +37,6 @@
   .btn-sm { padding: 4px 10px; font-size: 12px; }
   .btn:hover { opacity: 0.85; }
 
-  /* 指标配置 */
   .metric-row { display: grid;
     grid-template-columns: 160px 1fr 1fr 130px 100px 90px auto;
     gap: 8px; align-items: center; padding: 8px 0;
@@ -53,10 +49,8 @@
   .saved-config-tag { display: inline-flex; align-items: center; gap: 6px;
     background: #f0f6ff; border: 1px solid #b0c4de; border-radius: 16px;
     padding: 4px 12px; font-size: 13px; cursor: pointer; }
-  .saved-config-tag.active { background: #2c5f8a; color: #fff; border-color: #2c5f8a; }
   .saved-config-tag .del { cursor: pointer; color: #ff6b6b; }
 
-  /* 图表区 */
   .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
                  gap: 20px; }
   .chart-card { background: #fff; border-radius: 10px; padding: 16px;
@@ -64,12 +58,10 @@
   .chart-card h3 { font-size: 14px; color: #555; margin-bottom: 12px; }
   .chart-container { position: relative; height: 280px; }
 
-  /* 自定义图 */
   .custom-chart-builder { background: #f8fafc; border-radius: 8px; padding: 14px;
                            margin-bottom: 16px; }
   .custom-chart-builder label { font-size: 13px; color: #666; margin-right: 8px; }
 
-  /* 表格 */
   .table-wrapper { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { background: #2c5f8a; color: #fff; padding: 8px 12px; text-align: left;
@@ -79,37 +71,45 @@
   .anomaly { background: #fff0f0 !important; color: #c0392b; font-weight: 600; }
   .platform-title { font-weight: 600; color: #2c5f8a; margin: 12px 0 6px; }
 
-  /* 时间筛选 */
   .time-filter { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
                  margin-bottom: 12px; font-size: 13px; }
 
-  /* 分析按钮区 */
-  .action-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .action-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-  /* Spinner */
   .spinner { display: none; width: 18px; height: 18px; border: 3px solid #ccc;
              border-top-color: #2c5f8a; border-radius: 50%;
              animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading .spinner { display: inline-block; }
 
-  /* Tab */
   .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
   .tab { padding: 8px 18px; border-radius: 6px 6px 0 0; cursor: pointer;
          font-size: 14px; background: #e8f0f8; color: #555; }
+  .tab.active { background: #2c5f8a; color: #fff; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-  /* AI 文本分析 */
-  .ai-analysis-section { padding: 0; }
-  .ai-analysis-header { display: flex; align-items: center; justify-content: space-between;
-                        flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
-  .ai-analysis-content { min-height: 200px; }
-  .ai-placeholder { text-align: center; padding: 60px 20px; color: #aaa; }
-  .ai-placeholder p { margin-top: 10px; font-size: 14px; }
-  .ai-loading { text-align: center; padding: 60px 20px; color: #2c5f8a; }
-  .ai-loading .ai-spinner { width: 36px; height: 36px; border: 4px solid #e8f0f8;
-    border-top-color: #2c5f8a; border-radius: 50%;
-    animation: spin .8s linear infinite; margin: 0 auto 16px; }
-  .ai-loading p { font-size: 14px; }
+  /* 模式开关 */
+  .mode-badge { display: inline-flex; align-items: center; gap: 6px;
+    background: #e8f4ff; border: 1px solid #9ab8d8; border-radius: 20px;
+    padding: 4px 12px; font-size: 12px; color: #2c5f8a; font-weight: 600; }
+  .mode-switch { display: inline-flex; border: 1px solid #d0d9e8; border-radius: 6px; overflow: hidden; }
+  .mode-switch button { padding: 5px 14px; border: none; background: #f5f7fa;
+    cursor: pointer; font-size: 13px; color: #666; border-right: 1px solid #d0d9e8; }
+  .mode-switch button:last-child { border-right: none; }
+  .mode-switch button.active { background: #2c5f8a; color: #fff; }
+
+  /* 环比表格 */
+  .wow-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .wow-table th { background: #2c5f8a; color: #fff; padding: 8px 14px; white-space: nowrap; }
+  .wow-table td { padding: 8px 14px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+  .wow-table tr:hover td { background: #f8fafc; }
+  .up-good   { color: #27ae60; font-weight: 600; }
+  .up-bad    { color: #c0392b; font-weight: 600; }
+  .down-good { color: #27ae60; font-weight: 600; }
+  .down-bad  { color: #c0392b; font-weight: 600; }
+  .neutral   { color: #888; }
+
   .ai-report { line-height: 1.8; font-size: 14px; color: #333; }
   .ai-report h3 { font-size: 15px; color: #2c5f8a; margin: 20px 0 8px;
                   padding-bottom: 4px; border-bottom: 1px solid #e8f0f8; }
@@ -118,15 +118,15 @@
   .ai-report ul, .ai-report ol { padding-left: 20px; margin-bottom: 10px; }
   .ai-report li { margin-bottom: 4px; }
   .ai-report strong { color: #c0392b; }
-  .ai-report .highlight { background: #fffbea; border-left: 3px solid #f5a623;
-    padding: 8px 12px; border-radius: 0 6px 6px 0; margin: 10px 0; }
+  .ai-placeholder { text-align: center; padding: 60px 20px; color: #aaa; }
+  .ai-placeholder p { margin-top: 10px; font-size: 14px; }
+  .ai-loading { text-align: center; padding: 60px 20px; color: #2c5f8a; }
+  .ai-loading .ai-spinner { width: 36px; height: 36px; border: 4px solid #e8f0f8;
+    border-top-color: #2c5f8a; border-radius: 50%;
+    animation: spin .8s linear infinite; margin: 0 auto 16px; }
   .ai-error { background: #fff0f0; border: 1px solid #ffcdd2; border-radius: 8px;
               padding: 16px; color: #c0392b; font-size: 14px; }
-  .tab.active { background: #2c5f8a; color: #fff; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
 
-  /* 公式构建器弹窗 */
   .formula-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45);
     display: flex; align-items: center; justify-content: center; z-index: 2000; }
   .formula-modal { background: #fff; border-radius: 12px; padding: 24px;
@@ -146,7 +146,6 @@
   .formula-preview em { color: #2c5f8a; font-style: normal; font-weight: 600; }
   .formula-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
-  /* Toast */
   #toast { position: fixed; bottom: 24px; right: 24px; background: #333; color: #fff;
            padding: 10px 18px; border-radius: 8px; font-size: 14px; display: none;
            z-index: 1000; }
@@ -173,7 +172,7 @@
     </div>
     <input type="file" id="file-input" accept=".csv" multiple>
     <div id="file-list" style="margin-top:10px"></div>
-    <div id="field-preview" style="margin-top:10px; font-size:13px; color:#888"></div>
+    <div id="field-preview" style="margin-top:10px;font-size:13px;color:#888"></div>
   </div>
 
   <!-- 指标配置 -->
@@ -198,7 +197,8 @@
   </div>
 
   <!-- 公式构建器弹窗 -->
-  <div id="formula-modal-overlay" class="formula-modal-overlay" style="display:none" onclick="if(event.target===this)closeFormulaBuilder()">
+  <div id="formula-modal-overlay" class="formula-modal-overlay" style="display:none"
+       onclick="if(event.target===this)closeFormulaBuilder()">
     <div class="formula-modal">
       <h3>🧮 自定义公式指标</h3>
       <div style="margin-bottom:8px">
@@ -251,13 +251,21 @@
       <div>
         <div style="font-size:13px;color:#666;margin-bottom:6px;font-weight:600">项目（app）</div>
         <div style="position:relative;display:inline-block;min-width:220px">
-          <div id="app-dropdown-btn" onclick="toggleAppDropdown()" style="cursor:pointer;padding:6px 32px 6px 10px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px;background:#fff;user-select:none;min-height:32px;line-height:20px">
+          <div id="app-dropdown-btn" onclick="toggleAppDropdown()"
+               style="cursor:pointer;padding:6px 32px 6px 10px;border:1px solid #d0d9e8;
+                      border-radius:6px;font-size:13px;background:#fff;user-select:none;
+                      min-height:32px;line-height:20px">
             <span id="app-dropdown-label">全部项目</span>
             <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);color:#888">▾</span>
           </div>
-          <div id="app-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:220px;max-height:260px;overflow-y:auto;background:#fff;border:1px solid #d0d9e8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:999;padding:6px 0">
-            <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:600;border-bottom:1px solid #f0f0f0;margin-bottom:2px">
-              <input type="checkbox" id="app-select-all" onchange="toggleSelectAll(this)" style="width:14px;height:14px"> 全选
+          <div id="app-dropdown-menu"
+               style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:220px;
+                      max-height:260px;overflow-y:auto;background:#fff;border:1px solid #d0d9e8;
+                      border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:999;padding:6px 0">
+            <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;
+                          font-size:13px;font-weight:600;border-bottom:1px solid #f0f0f0;margin-bottom:2px">
+              <input type="checkbox" id="app-select-all" onchange="toggleSelectAll(this)"
+                     style="width:14px;height:14px"> 全选
             </label>
             <div id="app-filter-options"></div>
           </div>
@@ -266,9 +274,11 @@
       <div>
         <div style="font-size:13px;color:#666;margin-bottom:6px;font-weight:600">日期范围</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input type="date" id="filter-date-start" style="padding:5px 8px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
+          <input type="date" id="filter-date-start"
+                 style="padding:5px 8px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
           <span style="color:#888">至</span>
-          <input type="date" id="filter-date-end" style="padding:5px 8px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
+          <input type="date" id="filter-date-end"
+                 style="padding:5px 8px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
           <button class="btn btn-secondary btn-sm" onclick="clearDateFilter()">清空</button>
         </div>
       </div>
@@ -288,18 +298,42 @@
 
   <!-- 结果区 -->
   <div id="results-section" style="display:none">
-    <!-- 指标显示开关 -->
-    <div class="card" id="metric-toggle-card" style="padding:14px 20px">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <span style="font-size:13px;font-weight:600;color:#444;white-space:nowrap">📌 指标显示：</span>
-        <div id="metric-toggle-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;flex:1"></div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button class="btn btn-secondary btn-sm" onclick="setAllMetricsVisible(true)">全选</button>
-          <button class="btn btn-secondary btn-sm" onclick="setAllMetricsVisible(false)">全不选</button>
+    <!-- 顶栏：模式显示 + 手动切换 + 指标开关 -->
+    <div class="card" style="padding:14px 20px;margin-bottom:0;border-radius:10px 10px 0 0">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <span id="mode-badge" class="mode-badge">⚡ 快照对比</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:12px;color:#888">手动切换：</span>
+          <div class="mode-switch">
+            <button id="mode-btn-snapshot" onclick="switchMode('snapshot')">快照对比</button>
+            <button id="mode-btn-trend" onclick="switchMode('trend')">时间趋势</button>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:600;color:#444;white-space:nowrap">📌 指标显示：</span>
+          <div id="metric-toggle-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;flex:1"></div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn btn-secondary btn-sm" onclick="setAllMetricsVisible(true)">全选</button>
+            <button class="btn btn-secondary btn-sm" onclick="setAllMetricsVisible(false)">全不选</button>
+          </div>
         </div>
       </div>
     </div>
-    <div class="tabs">
+
+    <!-- 快照对比区：本期/基期标签选择 -->
+    <div id="wow-order-bar" class="card" style="display:none;padding:10px 20px;margin-top:2px;
+         border-radius:0;border-top:1px solid #e8f0f8">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px">
+        <span style="color:#666">本期（较新）：</span>
+        <select id="current-file-select" onchange="reRenderSnapshot()"
+                style="padding:4px 8px;font-size:13px;border:1px solid #d0d9e8;border-radius:6px"></select>
+        <span style="color:#666">基期（较旧）：</span>
+        <select id="base-file-select" onchange="reRenderSnapshot()"
+                style="padding:4px 8px;font-size:13px;border:1px solid #d0d9e8;border-radius:6px"></select>
+      </div>
+    </div>
+
+    <div class="tabs" style="margin-top:4px">
       <div class="tab active" onclick="switchTab('charts')">📈 图表分析</div>
       <div class="tab" onclick="switchTab('table')">📋 数据表格</div>
       <div class="tab" onclick="switchTab('ai')">🤖 AI 智能分析</div>
@@ -307,15 +341,14 @@
 
     <!-- 图表 Tab -->
     <div id="tab-charts" class="tab-content active">
-      <!-- 分组图表 -->
       <div class="charts-grid" id="charts-grid"></div>
-      <!-- 自定义图表 -->
       <div class="card" style="margin-top:20px">
         <h2>🎨 自定义对比图</h2>
         <div class="custom-chart-builder">
           <label>选择指标：</label>
           <div id="custom-metric-checkboxes" style="display:inline-flex;gap:12px;flex-wrap:wrap"></div>
-          <button class="btn btn-secondary btn-sm" style="margin-left:12px" onclick="buildCustomChart()">生成自定义图</button>
+          <button class="btn btn-secondary btn-sm" style="margin-left:12px"
+                  onclick="buildCustomChart()">生成自定义图</button>
         </div>
         <div class="chart-container" style="max-width:800px">
           <canvas id="customChart"></canvas>
@@ -327,7 +360,9 @@
     <div id="tab-table" class="tab-content">
       <div class="card">
         <h2>📋 数据汇总</h2>
-        <div class="time-filter" id="time-filter"></div>
+        <!-- 快照：环比表 -->
+        <div id="wow-table-container" style="display:none"></div>
+        <!-- 通用明细表 -->
         <div id="tables-container"></div>
       </div>
     </div>
@@ -335,11 +370,14 @@
     <!-- AI 分析 Tab -->
     <div id="tab-ai" class="tab-content">
       <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    flex-wrap:wrap;gap:12px;margin-bottom:16px">
           <h2 style="margin:0;border:none;padding:0">🤖 AI 智能投放分析</h2>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <input type="password" id="ai-api-key" placeholder="输入 Anthropic API Key（sk-ant-...）"
-              style="width:280px;padding:7px 10px;border:1px solid #d0d9e8;border-radius:6px;font-size:13px">
+            <input type="password" id="ai-api-key"
+                   placeholder="输入 Anthropic API Key（sk-ant-...）"
+                   style="width:280px;padding:7px 10px;border:1px solid #d0d9e8;
+                          border-radius:6px;font-size:13px">
             <button class="btn btn-primary" id="ai-analyze-btn" onclick="runAIAnalysis()">
               ✨ 生成专业分析报告
               <div class="spinner" style="vertical-align:middle;margin-left:6px"></div>
@@ -361,17 +399,15 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────
-// 状态
+// 全局状态
 // ─────────────────────────────────────────────────────────────
-let uploadedFiles = [];   // [{filename, platform, columns, time_column, rows}, ...]
-let allColumns = [];      // 所有文件的字段并集
-let metricRows = [];      // [{name, numerator, denominator, type, currency, unit}, ...]
+let uploadedFiles  = [];
+let allColumns     = [];
+let metricRows     = [];
 let analysisResult = null;
-let chartInstances = {};  // canvas id → Chart 实例
-let allAppValues = [];    // 所有 app 值
-let allDateValues = [];   // 所有日期值
-let selectedApps = new Set();  // 已选 app
-let visibleMetrics = new Set(); // 当前可见的衍生指标名（开关控制）
+let chartInstances = {};
+let visibleMetrics = new Set();
+let currentMode    = 'snapshot'; // 'snapshot' | 'trend'
 
 // ─────────────────────────────────────────────────────────────
 // 工具
@@ -382,10 +418,10 @@ function showToast(msg, duration=2500) {
   setTimeout(() => t.style.display = 'none', duration);
 }
 
+const COLORS = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f',
+                '#edc948','#b07aa1','#ff9da7','#9c755f','#bab0ac'];
 function getColors(n) {
-  const palette = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f',
-                   '#edc948','#b07aa1','#ff9da7','#9c755f','#bab0ac'];
-  return Array.from({length: n}, (_, i) => palette[i % palette.length]);
+  return Array.from({length: n}, (_, i) => COLORS[i % COLORS.length]);
 }
 
 function destroyChart(id) {
@@ -435,7 +471,7 @@ async function handleFiles(files) {
 function renderFileList() {
   const el = document.getElementById('file-list');
   el.innerHTML = uploadedFiles.map((f, i) =>
-    `<span class="file-tag">📄 ${f.platform} (${f.rows} 行)
+    `<span class="file-tag">📄 ${f.platform} (${f.rows}行)
      <span onclick="removeFile(${i})">✕</span></span>`
   ).join('');
 }
@@ -449,7 +485,9 @@ function removeFile(idx) {
 function renderFieldPreview() {
   const el = document.getElementById('field-preview');
   if (!uploadedFiles.length) { el.innerHTML = ''; return; }
-  el.innerHTML = '识别字段：' + allColumns.map(c => `<code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;margin:2px">${c}</code>`).join(' ');
+  el.innerHTML = '识别字段：' + allColumns.map(c =>
+    `<code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;margin:2px">${c}</code>`
+  ).join(' ');
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -457,34 +495,24 @@ function renderFieldPreview() {
 // ─────────────────────────────────────────────────────────────
 function addMetricRow(preset={}) {
   const type = preset.type || 'percent';
-  const row = {
+  metricRows.push({
     name: preset.name || '', numerator: preset.numerator || '',
     denominator: preset.denominator || '', type,
     currency: preset.currency || (type === 'currency' ? 'USD' : ''),
     unit: preset.unit || (type === 'percent' ? '%' : ''),
-    formula: preset.formula || '', isFormula: preset.isFormula || false
-  };
-  metricRows.push(row);
+    formula: preset.formula || '', isFormula: preset.isFormula || false,
+  });
   renderMetricRows();
 }
 
 function unitFieldHtml(m, i) {
-  if (m.type === 'currency') {
-    return `<input type="text" value="USD" readonly
-      style="background:#f5f5f5;color:#888;cursor:not-allowed"
-      oninput="metricRows[${i}].currency=this.value">`;
-  }
-  if (m.type === 'percent') {
-    return `<input type="text" value="%" readonly
-      style="background:#f5f5f5;color:#888;cursor:not-allowed"
-      oninput="metricRows[${i}].unit=this.value">`;
-  }
-  if (m.type === 'count') {
-    return `<input type="text" value="" placeholder="单位..."
-      oninput="metricRows[${i}].unit=this.value">`;
-  }
-  return `<input type="text" placeholder="单位..." value="${m.unit||''}"
-    oninput="metricRows[${i}].unit=this.value">`;
+  if (m.type === 'currency')
+    return `<input type="text" value="USD" readonly style="background:#f5f5f5;color:#888;cursor:not-allowed" oninput="metricRows[${i}].currency=this.value">`;
+  if (m.type === 'percent')
+    return `<input type="text" value="%" readonly style="background:#f5f5f5;color:#888;cursor:not-allowed" oninput="metricRows[${i}].unit=this.value">`;
+  if (m.type === 'count')
+    return `<input type="text" value="" placeholder="单位..." oninput="metricRows[${i}].unit=this.value">`;
+  return `<input type="text" placeholder="单位..." value="${m.unit||''}" oninput="metricRows[${i}].unit=this.value">`;
 }
 
 function autoFillUnit(idx, type) {
@@ -499,18 +527,15 @@ function renderMetricRows() {
   container.innerHTML = metricRows.map((m, i) => {
     if (m.isFormula) {
       return `<div class="metric-row" id="mrow-${i}">
-        <input type="text" value="${m.name}" placeholder="指标名称"
-          oninput="metricRows[${i}].name=this.value">
+        <input type="text" value="${m.name}" placeholder="指标名称" oninput="metricRows[${i}].name=this.value">
         <span style="font-size:12px;color:#666;padding:0 4px">公式: ${m.formula}</span>
         ${unitFieldHtml(m, i)}
         <div></div>
         <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
       </div>`;
     }
-    return `
-    <div class="metric-row" id="mrow-${i}">
-      <input type="text" value="${m.name}" placeholder="指标名称"
-        oninput="metricRows[${i}].name=this.value">
+    return `<div class="metric-row" id="mrow-${i}">
+      <input type="text" value="${m.name}" placeholder="指标名称" oninput="metricRows[${i}].name=this.value">
       <select onchange="metricRows[${i}].numerator=this.value">
         <option value="">--选择分子--</option>${opts}
       </select>
@@ -528,7 +553,6 @@ function renderMetricRows() {
       <button class="btn btn-danger btn-sm" onclick="removeMetricRow(${i})">删除</button>
     </div>`;
   }).join('');
-  // 恢复 select 选中值（仅简单指标）
   metricRows.forEach((m, i) => {
     if (m.isFormula) return;
     const row = document.getElementById(`mrow-${i}`);
@@ -539,146 +563,77 @@ function renderMetricRows() {
   });
 }
 
-function removeMetricRow(idx) {
-  metricRows.splice(idx, 1);
-  renderMetricRows();
-}
-
+function removeMetricRow(idx) { metricRows.splice(idx, 1); renderMetricRows(); }
 function refreshMetricFieldOptions() { renderMetricRows(); }
 
 // ─────────────────────────────────────────────────────────────
 // 公式构建器
 // ─────────────────────────────────────────────────────────────
-let fbEditIdx = -1;   // -1 = 新建，>=0 = 编辑已有行
-let fbTokens = [];    // 公式 token 数组，每项是字符串
+let fbEditIdx = -1;
+let fbTokens  = [];
 
 function openFormulaBuilder(idx) {
-  fbEditIdx = idx;
-  fbTokens = [];
+  fbEditIdx = idx; fbTokens = [];
   const overlay = document.getElementById('formula-modal-overlay');
   const nameEl = document.getElementById('fb-name');
   const typeEl = document.getElementById('fb-type');
   const unitEl = document.getElementById('fb-unit');
-
-  if (idx >= 0 && metricRows[idx] && metricRows[idx].isFormula) {
+  if (idx >= 0 && metricRows[idx]?.isFormula) {
     const m = metricRows[idx];
-    nameEl.value = m.name;
-    typeEl.value = m.type;
+    nameEl.value = m.name; typeEl.value = m.type;
     unitEl.value = m.type === 'currency' ? m.currency : m.unit;
-    // 解析已有公式为 tokens
-    fbTokens = m.formula ? m.formula.split(/(?<=\})|(?=\{)|(?<=[+\-*/()])|(?=[+\-*/()])/).filter(t => t.trim()) : [];
-  } else {
-    nameEl.value = '';
-    typeEl.value = 'percent';
-    unitEl.value = '';
-  }
-
-  // 渲染字段按钮
+    fbTokens = m.formula ? m.formula.split(/(?<=\})|(?=\{)|(?<=[+\-*/()])|(?=[+\-*/()])/).filter(t=>t.trim()) : [];
+  } else { nameEl.value=''; typeEl.value='percent'; unitEl.value=''; }
   const fieldBtns = document.getElementById('fb-field-btns');
-  if (allColumns.length) {
-    fieldBtns.innerHTML = allColumns.map(c =>
-      `<button class="formula-field-btn" onclick="fbInsertField('${c.replace(/'/g,"\\'")}')">
-        ${c}
-      </button>`
-    ).join('');
-  } else {
-    fieldBtns.innerHTML = '<span style="font-size:12px;color:#aaa">请先上传 CSV 文件</span>';
-  }
-
+  fieldBtns.innerHTML = allColumns.length
+    ? allColumns.map(c => `<button class="formula-field-btn" onclick="fbInsertField('${c.replace(/'/g,"\\'")}')"> ${c}</button>`).join('')
+    : '<span style="font-size:12px;color:#aaa">请先上传 CSV 文件</span>';
   fbUpdatePreview();
   overlay.style.display = 'flex';
   nameEl.focus();
 }
 
-function closeFormulaBuilder() {
-  document.getElementById('formula-modal-overlay').style.display = 'none';
-}
-
-function fbInsertField(fieldName) {
-  fbTokens.push(`{${fieldName}}`);
-  fbUpdatePreview();
-}
-
-function fbInsert(op) {
-  const opMap = {'×': '*', '÷': '/'};
-  fbTokens.push(opMap[op] || op);
-  fbUpdatePreview();
-}
-
-function fbInsertNum() {
-  const n = prompt('输入数字：');
-  if (n !== null && n.trim() !== '' && !isNaN(Number(n.trim()))) {
-    fbTokens.push(n.trim());
-    fbUpdatePreview();
-  }
-}
-
-function fbBackspace() {
-  fbTokens.pop();
-  fbUpdatePreview();
-}
-
-function fbClear() {
-  fbTokens = [];
-  fbUpdatePreview();
-}
-
+function closeFormulaBuilder() { document.getElementById('formula-modal-overlay').style.display='none'; }
+function fbInsertField(f) { fbTokens.push(`{${f}}`); fbUpdatePreview(); }
+function fbInsert(op) { const m={'×':'*','÷':'/'}; fbTokens.push(m[op]||op); fbUpdatePreview(); }
+function fbInsertNum() { const n=prompt('输入数字：'); if(n&&!isNaN(+n.trim())){fbTokens.push(n.trim());fbUpdatePreview();} }
+function fbBackspace() { fbTokens.pop(); fbUpdatePreview(); }
+function fbClear() { fbTokens=[]; fbUpdatePreview(); }
 function fbUpdatePreview() {
   const el = document.getElementById('fb-preview');
-  if (!fbTokens.length) {
-    el.textContent = '（点击字段和运算符来构建公式）';
-    return;
-  }
-  const displayMap = {'*': '×', '/': '÷'};
-  el.innerHTML = fbTokens.map(t => {
-    if (t.startsWith('{') && t.endsWith('}')) {
-      return `<em>${t.slice(1,-1)}</em>`;
-    }
-    return displayMap[t] || t;
-  }).join(' ');
+  if (!fbTokens.length) { el.textContent='（点击字段和运算符来构建公式）'; return; }
+  const dm = {'*':'×','/':'÷'};
+  el.innerHTML = fbTokens.map(t => t.startsWith('{')&&t.endsWith('}')
+    ? `<em>${t.slice(1,-1)}</em>` : (dm[t]||t)).join(' ');
 }
 
 function confirmFormulaBuilder() {
-  const name = document.getElementById('fb-name').value.trim();
-  const type = document.getElementById('fb-type').value;
-  const unit = document.getElementById('fb-unit').value.trim();
+  const name    = document.getElementById('fb-name').value.trim();
+  const type    = document.getElementById('fb-type').value;
+  const unit    = document.getElementById('fb-unit').value.trim();
   const formula = fbTokens.join('');
-
   if (!name) { showToast('请填写指标名称'); return; }
   if (!formula) { showToast('请构建公式'); return; }
-
-  const row = {
-    name, type,
-    currency: type === 'currency' ? unit : '',
-    unit: type !== 'currency' ? unit : '',
-    formula, isFormula: true,
-    numerator: '', denominator: ''
-  };
-
-  if (fbEditIdx >= 0) {
-    metricRows[fbEditIdx] = row;
-  } else {
-    metricRows.push(row);
-  }
-
-  renderMetricRows();
-  closeFormulaBuilder();
+  const row = { name, type, currency: type==='currency'?unit:'', unit: type!=='currency'?unit:'',
+                formula, isFormula:true, numerator:'', denominator:'' };
+  if (fbEditIdx>=0) metricRows[fbEditIdx]=row; else metricRows.push(row);
+  renderMetricRows(); closeFormulaBuilder();
 }
 
 // ─────────────────────────────────────────────────────────────
 // 基础配置
 // ─────────────────────────────────────────────────────────────
 const BASE_CONFIG = [
-  { name: '注册率',   numerator: 'register_success_events', denominator: 'installs',                   type: 'percent',  unit: '%',   currency: '' },
-  { name: '下单率',   numerator: 'first_time_events',        denominator: 'register_success_events',    type: 'percent',  unit: '%',   currency: '' },
-  { name: '成交率',   numerator: 'first_time_paid_events',   denominator: 'first_time_events',          type: 'percent',  unit: '%',   currency: '' },
-  { name: '注册成本', numerator: 'cost',                     denominator: 'register_success_events',    type: 'currency', unit: '',    currency: 'USD' },
-  { name: '下单成本', numerator: 'cost',                     denominator: 'first_time_events',          type: 'currency', unit: '',    currency: 'USD' },
-  { name: '成交',     numerator: 'cost',                     denominator: 'first_trade_success_events', type: 'currency', unit: '',    currency: 'USD' },
+  { name:'注册率',   numerator:'register_success_events', denominator:'installs',                  type:'percent',  unit:'%',  currency:'' },
+  { name:'下单率',   numerator:'first_time_events',       denominator:'register_success_events',   type:'percent',  unit:'%',  currency:'' },
+  { name:'成交率',   numerator:'first_time_paid_events',  denominator:'first_time_events',         type:'percent',  unit:'%',  currency:'' },
+  { name:'注册成本', numerator:'cost',                    denominator:'register_success_events',   type:'currency', unit:'',   currency:'USD' },
+  { name:'下单成本', numerator:'cost',                    denominator:'first_time_events',         type:'currency', unit:'',   currency:'USD' },
+  { name:'成交成本', numerator:'cost',                    denominator:'first_time_paid_events',    type:'currency', unit:'',   currency:'USD' },
 ];
 
 function applyBaseConfig() {
-  metricRows = BASE_CONFIG.map(m => ({...m, formula: '', isFormula: false}));
+  metricRows = BASE_CONFIG.map(m => ({...m, formula:'', isFormula:false}));
   renderMetricRows();
   showToast('✅ 已加载基础配置');
 }
@@ -689,27 +644,20 @@ function applyBaseConfig() {
 async function loadSavedConfigs() {
   try {
     const res = await fetch('/api/metrics');
-    if (!res.ok) throw new Error('加载失败: ' + res.status);
+    if (!res.ok) throw new Error('加载失败');
     const configs = await res.json();
     const el = document.getElementById('saved-configs');
-    el.innerHTML = configs.map(c => `
-      <span class="saved-config-tag" onclick="applyConfig('${c.name}')">
-        ${c.name}
-        <span class="del" onclick="event.stopPropagation();deleteConfig('${c.name}')">✕</span>
-      </span>
-    `).join('');
-    // 自动恢复上次使用的配置
+    el.innerHTML = configs.map(c =>
+      `<span class="saved-config-tag" onclick="applyConfig('${c.name}')">
+         ${c.name}<span class="del" onclick="event.stopPropagation();deleteConfig('${c.name}')">✕</span>
+       </span>`
+    ).join('');
     const lastName = localStorage.getItem('lastMetricConfig');
     if (lastName) {
       const cfg = configs.find(c => c.name === lastName);
-      if (cfg) {
-        metricRows = cfg.metrics.map(m => ({...m}));
-        renderMetricRows();
-      }
+      if (cfg) { metricRows = cfg.metrics.map(m=>({...m})); renderMetricRows(); }
     }
-  } catch(e) {
-    showToast('❌ 加载配置失败：' + e.message);
-  }
+  } catch(e) { showToast('❌ 加载配置失败：' + e.message); }
 }
 
 async function saveCurrentConfig() {
@@ -717,33 +665,25 @@ async function saveCurrentConfig() {
   if (!name) { showToast('请输入配置名称'); return; }
   try {
     const res = await fetch('/api/metrics', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ name, metrics: metricRows })
     });
     if (!res.ok) { showToast('❌ 保存失败'); return; }
     showToast(`✅ 配置"${name}"已保存`);
     loadSavedConfigs();
-  } catch(e) {
-    showToast('❌ 保存失败：' + e.message);
-  }
+  } catch(e) { showToast('❌ 保存失败：' + e.message); }
 }
 
 async function deleteConfig(name) {
   try {
-    const res = await fetch(`/api/metrics/${encodeURIComponent(name)}`, { method: 'DELETE' });
-    if (!res.ok) { showToast('❌ 删除失败'); return; }
-    showToast(`🗑️ 已删除"${name}"`);
-    loadSavedConfigs();
-  } catch(e) {
-    showToast('❌ 删除失败：' + e.message);
-  }
+    await fetch(`/api/metrics/${encodeURIComponent(name)}`, {method:'DELETE'});
+    showToast(`🗑️ 已删除"${name}"`); loadSavedConfigs();
+  } catch(e) { showToast('❌ 删除失败：' + e.message); }
 }
 
 async function applyConfig(name) {
   try {
     const res = await fetch('/api/metrics');
-    if (!res.ok) { showToast('❌ 加载配置失败'); return; }
     const configs = await res.json();
     const cfg = configs.find(c => c.name === name);
     if (!cfg) return;
@@ -751,9 +691,66 @@ async function applyConfig(name) {
     renderMetricRows();
     localStorage.setItem('lastMetricConfig', name);
     showToast(`✅ 已加载配置"${name}"`);
-  } catch(e) {
-    showToast('❌ 加载配置失败：' + e.message);
+  } catch(e) { showToast('❌ 加载配置失败：' + e.message); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 筛选 UI
+// ─────────────────────────────────────────────────────────────
+function renderFilterUI() {
+  const allApps = [...new Set(uploadedFiles.flatMap(f => f.app_values||[]))].sort();
+  const container = document.getElementById('app-filter-options');
+  if (allApps.length && container) {
+    container.innerHTML = '';
+    allApps.forEach(a => {
+      const label = document.createElement('label');
+      label.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px;white-space:nowrap';
+      label.innerHTML = `<input type="checkbox" value="${a}" checked onchange="syncSelectAll()" style="width:14px;height:14px"> ${a}`;
+      container.appendChild(label);
+    });
+    document.getElementById('filter-card').style.display = 'block';
+    syncSelectAll(); updateDropdownLabel();
   }
+  const allDates = [...new Set(uploadedFiles.flatMap(f => f.date_values||[]))].sort();
+  if (allDates.length) {
+    document.getElementById('filter-date-start').value = allDates[0];
+    document.getElementById('filter-date-end').value   = allDates[allDates.length-1];
+  }
+}
+
+function toggleAppDropdown() {
+  const menu = document.getElementById('app-dropdown-menu');
+  menu.style.display = menu.style.display==='none' ? 'block' : 'none';
+}
+document.addEventListener('click', e => {
+  const btn  = document.getElementById('app-dropdown-btn');
+  const menu = document.getElementById('app-dropdown-menu');
+  if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+    menu.style.display = 'none'; updateDropdownLabel();
+  }
+});
+function toggleSelectAll(cb) {
+  document.querySelectorAll('#app-filter-options input').forEach(c => c.checked = cb.checked);
+  updateDropdownLabel();
+}
+function syncSelectAll() {
+  const checks = [...document.querySelectorAll('#app-filter-options input')];
+  const selectAllCb = document.getElementById('app-select-all');
+  if (selectAllCb) selectAllCb.checked = checks.every(c => c.checked);
+  updateDropdownLabel();
+}
+function updateDropdownLabel() {
+  const checks   = [...document.querySelectorAll('#app-filter-options input')];
+  const selected = checks.filter(c => c.checked);
+  const label    = document.getElementById('app-dropdown-label');
+  if (!label) return;
+  if (selected.length === 0) label.textContent = '未选择';
+  else if (selected.length === checks.length) label.textContent = '全部项目';
+  else label.textContent = `已选 ${selected.length} 个项目`;
+}
+function clearDateFilter() {
+  document.getElementById('filter-date-start').value = '';
+  document.getElementById('filter-date-end').value   = '';
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -765,142 +762,118 @@ function renderMetricToggles(metricDefs) {
     `<label style="display:inline-flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;
       background:#f0f6ff;border:1px solid #b0c4de;border-radius:14px;padding:3px 10px;white-space:nowrap">
       <input type="checkbox" value="${m.name}" checked
-        onchange="syncMetricToggle('${m.name}', this.checked)"
+        onchange="syncMetricToggle('${m.name}',this.checked)"
         style="width:13px;height:13px"> ${m.name}
     </label>`
   ).join('');
 }
 
 function syncMetricToggle(name, checked) {
-  if (checked) visibleMetrics.add(name);
-  else visibleMetrics.delete(name);
-
-  // 同步自定义对比图那边同名的 checkbox
+  if (checked) visibleMetrics.add(name); else visibleMetrics.delete(name);
   const customCb = document.querySelector(`#custom-metric-checkboxes input[value="${CSS.escape(name)}"]`);
   if (customCb) customCb.checked = checked;
-
-  // 实时更新图表和表格
   if (analysisResult) {
-    const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
-    renderCharts(analysisResult.charts, validMetrics);
-    renderTables(analysisResult.tables, validMetrics);
+    const vm = metricRows.filter(m => m.name && m.numerator && m.denominator);
+    if (currentMode === 'snapshot') renderSnapshotCharts(analysisResult.charts, vm);
+    else renderTrendCharts(analysisResult.charts, vm);
+    renderTables(analysisResult.tables, vm);
+    if (analysisResult.wow) renderWowTable(analysisResult.wow);
   }
 }
 
 function setAllMetricsVisible(show) {
-  const cbs = document.querySelectorAll('#metric-toggle-checkboxes input[type=checkbox]');
-  cbs.forEach(cb => {
-    cb.checked = show;
-    syncMetricToggle(cb.value, show);
+  document.querySelectorAll('#metric-toggle-checkboxes input').forEach(cb => {
+    cb.checked = show; syncMetricToggle(cb.value, show);
   });
+}
+
+// ─────────────────────────────────────────────────────────────
+// 模式切换
+// ─────────────────────────────────────────────────────────────
+function applyMode(mode) {
+  currentMode = mode;
+  const badgeEl  = document.getElementById('mode-badge');
+  const orderBar = document.getElementById('wow-order-bar');
+  badgeEl.textContent = mode === 'snapshot' ? '⚡ 快照对比' : '📈 时间趋势';
+  orderBar.style.display = mode === 'snapshot' && uploadedFiles.length >= 2 ? 'block' : 'none';
+  document.querySelectorAll('.mode-switch button').forEach(b => b.classList.remove('active'));
+  document.getElementById(`mode-btn-${mode}`)?.classList.add('active');
+}
+
+function switchMode(mode) {
+  applyMode(mode);
+  if (analysisResult) {
+    const vm = metricRows.filter(m => m.name && m.numerator && m.denominator);
+    if (mode === 'snapshot') {
+      renderSnapshotCharts(analysisResult.charts, vm);
+    } else {
+      renderTrendCharts(analysisResult.charts, vm);
+    }
+    renderTables(analysisResult.tables, vm);
+    if (analysisResult.wow) renderWowTable(analysisResult.wow);
+    else document.getElementById('wow-table-container').style.display = 'none';
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
 // 运行分析
 // ─────────────────────────────────────────────────────────────
-function renderFilterUI() {
-  // 收集所有 app 值
-  const allApps = [...new Set(uploadedFiles.flatMap(f => f.app_values || []))].sort();
-  const container = document.getElementById('app-filter-options');
-  if (allApps.length && container) {
-    container.innerHTML = '';
-    allApps.forEach(a => {
-      const label = document.createElement('label');
-      label.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px;white-space:nowrap';
-      label.innerHTML = `<input type="checkbox" value="${a}" checked onchange="syncSelectAll()" style="width:14px;height:14px"> ${a}`;
-      container.appendChild(label);
-    });
-    document.getElementById('filter-card').style.display = 'block';
-    // 同步全选复选框状态
-    syncSelectAll();
-    updateDropdownLabel();
-  }
-  // 设置日期范围默认值
-  const allDates = [...new Set(uploadedFiles.flatMap(f => f.date_values || []))].sort();
-  if (allDates.length) {
-    document.getElementById('filter-date-start').value = allDates[0];
-    document.getElementById('filter-date-end').value = allDates[allDates.length - 1];
-  }
-}
-
-function toggleAppDropdown() {
-  const menu = document.getElementById('app-dropdown-menu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
-// 点击下拉菜单外部时关闭
-document.addEventListener('click', function(e) {
-  const btn = document.getElementById('app-dropdown-btn');
-  const menu = document.getElementById('app-dropdown-menu');
-  if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
-    menu.style.display = 'none';
-    updateDropdownLabel();
-  }
-});
-
-function toggleSelectAll(cb) {
-  const checks = document.querySelectorAll('#app-filter-options input[type=checkbox]');
-  checks.forEach(c => c.checked = cb.checked);
-  updateDropdownLabel();
-}
-
-function syncSelectAll() {
-  const checks = [...document.querySelectorAll('#app-filter-options input[type=checkbox]')];
-  const allChecked = checks.every(c => c.checked);
-  const selectAllCb = document.getElementById('app-select-all');
-  if (selectAllCb) selectAllCb.checked = allChecked;
-  updateDropdownLabel();
-}
-
-function updateDropdownLabel() {
-  const checks = [...document.querySelectorAll('#app-filter-options input[type=checkbox]')];
-  const selected = checks.filter(c => c.checked);
-  const label = document.getElementById('app-dropdown-label');
-  if (!label) return;
-  if (selected.length === 0) label.textContent = '未选择';
-  else if (selected.length === checks.length) label.textContent = '全部项目';
-  else label.textContent = `已选 ${selected.length} 个项目`;
-}
-
-function clearDateFilter() {
-  document.getElementById('filter-date-start').value = '';
-  document.getElementById('filter-date-end').value = '';
-}
-
 async function runAnalysis() {
   if (!uploadedFiles.length) { showToast('请先上传 CSV 文件'); return; }
   const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
   if (!validMetrics.length) { showToast('请至少配置一个完整的指标'); return; }
 
-  // 读取筛选条件
-  const checkedApps = [...document.querySelectorAll('#app-filter-options input[type=checkbox]:checked')].map(c => c.value);
-  const dateStart = document.getElementById('filter-date-start').value;
-  const dateEnd = document.getElementById('filter-date-end').value;
+  const checkedApps = [...document.querySelectorAll('#app-filter-options input:checked')].map(c => c.value);
+  const dateStart   = document.getElementById('filter-date-start').value;
+  const dateEnd     = document.getElementById('filter-date-end').value;
 
   document.getElementById('analyze-btn').classList.add('loading');
   try {
     const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        files: uploadedFiles.map(f => ({filename: f.filename, platform: f.platform, time_column: f.time_column})),
+        files: uploadedFiles.map(f => ({filename:f.filename, platform:f.platform, time_column:f.time_column})),
         metrics: validMetrics,
         filter_apps: checkedApps,
         filter_date_start: dateStart,
         filter_date_end: dateEnd,
+        mode: 'auto',
       })
     });
     if (!res.ok) { showToast('❌ 分析失败: ' + res.status); return; }
     const data = await res.json();
     if (data.error) { showToast('❌ ' + data.error); return; }
+
     analysisResult = data;
     document.getElementById('results-section').style.display = 'block';
-    // 初始化指标显示开关（全部可见）
+
+    // 设置模式
+    applyMode(data.mode || 'snapshot');
+
+    // 初始化本期/基期选择器
+    if (uploadedFiles.length >= 2) {
+      const curSel  = document.getElementById('current-file-select');
+      const baseSel = document.getElementById('base-file-select');
+      const opts    = uploadedFiles.map((f,i) => `<option value="${i}">${f.platform}</option>`).join('');
+      curSel.innerHTML  = opts;
+      baseSel.innerHTML = opts;
+      curSel.value  = '0';
+      baseSel.value = '1';
+    }
+
     visibleMetrics = new Set(validMetrics.map(m => m.name));
     renderMetricToggles(validMetrics);
-    renderCharts(data.charts, validMetrics);
+
+    if (data.mode === 'snapshot') {
+      renderSnapshotCharts(data.charts, validMetrics);
+    } else {
+      renderTrendCharts(data.charts, validMetrics);
+    }
     renderTables(data.tables, validMetrics);
     renderCustomChartBuilder(validMetrics);
+    if (data.wow) renderWowTable(data.wow);
+    else document.getElementById('wow-table-container').style.display = 'none';
+
   } catch(e) {
     showToast('❌ 分析失败：' + e.message);
   } finally {
@@ -908,14 +881,27 @@ async function runAnalysis() {
   }
 }
 
+// 本期/基期切换后重发请求（简化：直接调 runAnalysis，order 信息附带在 files 顺序里）
+async function reRenderSnapshot() {
+  if (!analysisResult) return;
+  const curIdx  = parseInt(document.getElementById('current-file-select').value);
+  const baseIdx = parseInt(document.getElementById('base-file-select').value);
+  if (curIdx === baseIdx) { showToast('本期和基期不能是同一个文件'); return; }
+  // 重排 uploadedFiles 顺序（本期第一，基期第二）并重新分析
+  const ordered = [uploadedFiles[curIdx], uploadedFiles[baseIdx],
+    ...uploadedFiles.filter((_,i) => i!==curIdx && i!==baseIdx)];
+  const origFiles = uploadedFiles;
+  uploadedFiles = ordered;
+  await runAnalysis();
+  uploadedFiles = origFiles;
+}
+
 // ─────────────────────────────────────────────────────────────
-// 图表渲染
+// 图表渲染 — 快照模式（分组柱状图）
 // ─────────────────────────────────────────────────────────────
-function renderCharts(charts, metricDefs) {
+function renderSnapshotCharts(charts, metricDefs) {
   const grid = document.getElementById('charts-grid');
   grid.innerHTML = '';
-
-  // 按数据类型分组，过滤掉不可见的指标
   const groups = {};
   for (const [mname, cdata] of Object.entries(charts)) {
     if (!visibleMetrics.has(mname)) continue;
@@ -923,74 +909,114 @@ function renderCharts(charts, metricDefs) {
     if (!groups[dtype]) groups[dtype] = [];
     groups[dtype].push({ name: mname, ...cdata });
   }
-
   const groupLabels = { percent:'转化率对比', currency:'成本对比', count:'数量对比', custom:'自定义指标对比' };
-
   for (const [dtype, items] of Object.entries(groups)) {
     const card = document.createElement('div');
     card.className = 'chart-card';
     const canvasId = `chart-${dtype}`;
-    card.innerHTML = `<h3>${groupLabels[dtype] || dtype}</h3><div class="chart-container"><canvas id="${canvasId}"></canvas></div>`;
+    card.innerHTML = `<h3>${groupLabels[dtype]||dtype}</h3><div class="chart-container"><canvas id="${canvasId}"></canvas></div>`;
     grid.appendChild(card);
-
     destroyChart(canvasId);
+    const allPlatforms = [...new Set(items.flatMap(it => it.labels||[]))];
+    const colors = getColors(items.length);
+    const datasets = items.map((item, ci) => {
+      const dataMap = {};
+      (item.labels||[]).forEach((lbl, li) => { dataMap[lbl] = item.datasets?.[0]?.data?.[li] ?? null; });
+      return {
+        label: item.name,
+        data: allPlatforms.map(p => dataMap[p] ?? null),
+        backgroundColor: colors[ci] + 'cc',
+        borderColor: colors[ci],
+        borderWidth: 1,
+      };
+    });
+    const yLabel = yAxisLabel(dtype, items[0]?.currency, items[0]?.unit);
+    chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
+      type: 'bar',
+      data: { labels: allPlatforms, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode:'index', intersect:false },
+        plugins: {
+          legend: { position:'bottom' },
+          tooltip: { callbacks: { label: ctx => {
+            const v = ctx.parsed.y;
+            if (v===null) return ctx.dataset.label+': -';
+            return ctx.dataset.label+': '+(yLabel==='%' ? v.toFixed(2)+'%' : yLabel+v.toFixed(2));
+          }}}
+        },
+        scales: { y: { ticks: { callback: v => yLabel==='%' ? v.toFixed(1)+'%' : yLabel+v } } }
+      }
+    });
+  }
+}
 
+// ─────────────────────────────────────────────────────────────
+// 图表渲染 — 趋势模式（折线图）
+// ─────────────────────────────────────────────────────────────
+function renderTrendCharts(charts, metricDefs) {
+  const grid = document.getElementById('charts-grid');
+  grid.innerHTML = '';
+  const groups = {};
+  for (const [mname, cdata] of Object.entries(charts)) {
+    if (!visibleMetrics.has(mname)) continue;
+    const dtype = cdata.type || 'count';
+    if (!groups[dtype]) groups[dtype] = [];
+    groups[dtype].push({ name: mname, ...cdata });
+  }
+  const groupLabels = { percent:'转化率趋势', currency:'成本趋势', count:'数量趋势', custom:'自定义指标趋势' };
+  for (const [dtype, items] of Object.entries(groups)) {
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    const canvasId = `chart-${dtype}`;
+    card.innerHTML = `<h3>${groupLabels[dtype]||dtype}</h3><div class="chart-container"><canvas id="${canvasId}"></canvas></div>`;
+    grid.appendChild(card);
+    destroyChart(canvasId);
     const labels = items[0]?.labels || [];
     const colors = getColors(items.flatMap(i => i.datasets).length);
     let colorIdx = 0;
     const datasets = items.flatMap(item =>
-      item.datasets.map(ds => ({
+      (item.datasets||[]).map(ds => ({
         label: `${ds.label} - ${item.name}`,
         data: ds.data,
         borderColor: colors[colorIdx++],
         backgroundColor: 'transparent',
-        tension: 0.3, pointRadius: 4,
+        tension: 0.3, pointRadius: 4, spanGaps: false,
       }))
     );
-
     const yLabel = yAxisLabel(dtype, items[0]?.currency, items[0]?.unit);
     chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
       type: 'line',
       data: { labels, datasets },
       options: {
         responsive: true, maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
+        interaction: { mode:'index', intersect:false },
         plugins: {
-          legend: { position: 'bottom' },
-          tooltip: {
-            callbacks: {
-              label: ctx => {
-                const v = ctx.parsed.y;
-                if (v === null || v === undefined) return ctx.dataset.label + ': -';
-                const formatted = yLabel === '%' ? v.toFixed(2) + '%' : yLabel + v.toFixed(2);
-                return ctx.dataset.label + ': ' + formatted;
-              }
-            }
-          }
+          legend: { position:'bottom' },
+          tooltip: { callbacks: { label: ctx => {
+            const v = ctx.parsed.y;
+            if (v===null||v===undefined) return ctx.dataset.label+': -';
+            return ctx.dataset.label+': '+(yLabel==='%' ? v.toFixed(2)+'%' : yLabel+v.toFixed(2));
+          }}}
         },
         scales: {
-          x: {
-            ticks: {
-              maxRotation: 45,
-              minRotation: 0,
-              autoSkip: true,
-              maxTicksLimit: 12
-            }
-          },
-          y: { ticks: { callback: v => yLabel === '%' ? v.toFixed(2) + '%' : yLabel + v } }
+          x: { ticks: { maxRotation:45, autoSkip:true, maxTicksLimit:12 } },
+          y: { ticks: { callback: v => yLabel==='%' ? v.toFixed(2)+'%' : yLabel+v } }
         }
       }
     });
   }
 }
 
-// 自定义图表
+// ─────────────────────────────────────────────────────────────
+// 自定义对比图
+// ─────────────────────────────────────────────────────────────
 function renderCustomChartBuilder(metricDefs) {
   const el = document.getElementById('custom-metric-checkboxes');
   el.innerHTML = metricDefs.map(m =>
     `<label style="font-size:13px;cursor:pointer">
-      <input type="checkbox" value="${m.name}" ${visibleMetrics.has(m.name) ? 'checked' : ''}
-        onchange="syncMetricToggle('${m.name}', this.checked)"> ${m.name}
+      <input type="checkbox" value="${m.name}" ${visibleMetrics.has(m.name)?'checked':''}
+        onchange="syncMetricToggle('${m.name}',this.checked)"> ${m.name}
     </label>`
   ).join('');
 }
@@ -999,122 +1025,157 @@ function buildCustomChart() {
   if (!analysisResult) return;
   const checked = [...document.querySelectorAll('#custom-metric-checkboxes input:checked')].map(i => i.value);
   if (!checked.length) { showToast('请勾选至少一个指标'); return; }
-
   destroyChart('customChart');
-
   const charts = analysisResult.charts;
   const colors = getColors(checked.length * 4);
   let colorIdx = 0;
-
   const types = [...new Set(checked.map(n => charts[n]?.type))];
   const hasMixed = types.length > 1;
-
   const labels = charts[checked[0]]?.labels || [];
   const datasets = [];
   const yAxes = {};
-
+  const chartType = currentMode === 'snapshot' ? 'bar' : 'line';
   checked.forEach(mname => {
     const cdata = charts[mname];
     if (!cdata) return;
     const yAxisId = hasMixed ? cdata.type : 'y';
     yAxes[yAxisId] = yAxisLabel(cdata.type, cdata.currency, cdata.unit);
-    cdata.datasets.forEach(ds => {
+    (cdata.datasets||[]).forEach(ds => {
       datasets.push({
-        label: `${ds.label} - ${mname}`,
-        data: ds.data,
-        borderColor: colors[colorIdx++],
-        backgroundColor: 'transparent',
-        tension: 0.3, pointRadius: 4,
-        yAxisID: yAxisId,
+        label: `${ds.label} - ${mname}`, data: ds.data,
+        borderColor: colors[colorIdx], backgroundColor: colors[colorIdx++]+'aa',
+        tension:0.3, pointRadius:4, yAxisID: yAxisId, spanGaps:false,
       });
     });
   });
-
-  const scalesConfig = {
-    x: {
-      ticks: {
-        maxRotation: 45,
-        minRotation: 0,
-        autoSkip: true,
-        maxTicksLimit: 12
-      }
-    }
-  };
+  const scalesConfig = { x: { ticks: { maxRotation:45, autoSkip:true, maxTicksLimit:12 } } };
   Object.entries(yAxes).forEach(([id, label], i) => {
-    scalesConfig[id] = {
-      position: i === 0 ? 'left' : 'right',
-      ticks: { callback: v => label === '%' ? v + '%' : label + v }
-    };
+    scalesConfig[id] = { position:i===0?'left':'right', ticks:{ callback: v => label==='%'?v+'%':label+v } };
   });
-
-  // 自定义图表 tooltip 格式化（支持多轴单位）
-  const customTooltipCallbacks = {
-    label: function(context) {
-      const dsLabel = context.dataset.label || '';
-      const yId = context.dataset.yAxisID || 'y';
-      const axisLabel = yAxes[yId] || '';
-      const val = context.parsed.y;
-      if (val === null || val === undefined) return dsLabel + ': -';
-      let formatted;
-      if (axisLabel === '%') formatted = val.toFixed(2) + '%';
-      else if (axisLabel) formatted = axisLabel + val.toFixed(2);
-      else formatted = val.toFixed(4);
-      return dsLabel + ': ' + formatted;
-    }
-  };
-
   chartInstances['customChart'] = new Chart(document.getElementById('customChart'), {
-    type: 'line',
+    type: chartType,
     data: { labels, datasets },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { position: 'bottom' },
-        tooltip: { callbacks: customTooltipCallbacks }
-      },
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins: { legend:{ position:'bottom' }, tooltip:{ callbacks:{ label: ctx => {
+        const ax = yAxes[ctx.dataset.yAxisID||'y']||'';
+        const v  = ctx.parsed.y;
+        if (v===null||v===undefined) return ctx.dataset.label+': -';
+        return ctx.dataset.label+': '+(ax==='%'?v.toFixed(2)+'%':ax?ax+v.toFixed(2):v.toFixed(4));
+      }}}},
       scales: scalesConfig
     }
   });
 }
 
 // ─────────────────────────────────────────────────────────────
-// 表格渲染
+// 环比表格（模式A专用）
+// ─────────────────────────────────────────────────────────────
+const ABS_COLS = new Set(['installs','register_success_events','first_time_events',
+                          'first_time_paid_events','cost']);
+
+function renderWowTable(wow) {
+  const container = document.getElementById('wow-table-container');
+  if (!wow?.rows?.length) { container.style.display='none'; return; }
+  container.style.display = 'block';
+  const rows = wow.rows.filter(r => visibleMetrics.has(r.metric) || ABS_COLS.has(r.metric));
+
+  const fmtVal = (row, val) => {
+    if (val===null||val===undefined) return '-';
+    const m = metricRows.find(m => m.name===row.metric);
+    if (!m) return typeof val==='number' ? val.toLocaleString() : String(val);
+    if (m.type==='percent')  return val.toFixed(2)+'%';
+    if (m.type==='currency') return (m.currency||'')+val.toFixed(2);
+    return val.toFixed(4);
+  };
+
+  const colorClass = (row, isPositive) => {
+    if (isPositive===null) return 'neutral';
+    return row.direction==='higher'
+      ? (isPositive ? 'up-good' : 'down-bad')
+      : (isPositive ? 'up-bad'  : 'down-good');
+  };
+
+  const fmtDeltaAbs = row => {
+    const d = row.delta;
+    if (d===null||d===undefined) return '-';
+    const m  = metricRows.find(m => m.name===row.metric);
+    const isPositive = d>0 ? true : d<0 ? false : null;
+    const cls = colorClass(row, isPositive);
+    let s;
+    if (!m)                          s = (d>0?'+':'')+Math.round(d).toLocaleString();
+    else if (m.type==='percent')     s = (d>0?'+':'')+d.toFixed(2)+'%';
+    else if (m.type==='currency')    s = (d>0?'+':'')+(m.currency||'')+d.toFixed(2);
+    else                             s = (d>0?'+':'')+d.toFixed(4);
+    return `<span class="${cls}">${s}</span>`;
+  };
+
+  const fmtDeltaPct = row => {
+    const d = row.delta_pct;
+    if (d===null||d===undefined) return '<span class="neutral">-</span>';
+    const isPositive = d>0 ? true : d<0 ? false : null;
+    const cls  = colorClass(row, isPositive);
+    const arrow = isPositive===null ? '→' : (isPositive ? '▲' : '▼');
+    return `<span class="${cls}">${arrow} ${Math.abs(d).toFixed(2)}%</span>`;
+  };
+
+  const trs = rows.map(row => `<tr>
+    <td>${row.metric}</td>
+    <td>${fmtVal(row, row.base)}</td>
+    <td>${fmtVal(row, row.current)}</td>
+    <td>${fmtDeltaAbs(row)}</td>
+    <td>${fmtDeltaPct(row)}</td>
+  </tr>`).join('');
+
+  container.innerHTML = `
+    <p class="platform-title" style="margin-bottom:10px">
+      📊 周环比：${wow.base_label} → ${wow.current_label}
+    </p>
+    <div class="table-wrapper">
+      <table class="wow-table">
+        <thead><tr>
+          <th>指标</th><th>基期（${wow.base_label}）</th>
+          <th>本期（${wow.current_label}）</th>
+          <th>变化量</th><th>环比变化率</th>
+        </tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// 明细表格
 // ─────────────────────────────────────────────────────────────
 function renderTables(tables, metricDefs) {
-  const container = document.getElementById('tables-container');
-  const dtypeMap = {};
+  const container  = document.getElementById('tables-container');
+  const dtypeMap   = {};
   metricDefs.forEach(m => dtypeMap[m.name] = m);
-  // 衍生指标名集合（只过滤这些列）
   const metricNames = new Set(metricDefs.map(m => m.name));
-
   container.innerHTML = tables.map(table => {
-    // 过滤列：非衍生指标列始终显示，衍生指标列按 visibleMetrics 过滤
     const cols = table.columns.filter(c => !metricNames.has(c) || visibleMetrics.has(c));
     const header = cols.map(c => `<th>${c}</th>`).join('');
-    const rows = table.rows.map((row, ri) => {
+    const rowsHtml = table.rows.map((row, ri) => {
       const cells = cols.map(col => {
         let val = row[col] ?? '-';
         const isAnom = table.anomalies[col]?.includes(ri);
         let display = val;
-        if (col in dtypeMap && val !== '' && val !== '-') {
-          const m = dtypeMap[col];
-          const num = parseFloat(val);
+        if (col in dtypeMap && val!==''&&val!=='-') {
+          const m=dtypeMap[col], num=parseFloat(val);
           if (!isNaN(num)) {
-            if (m.type === 'percent') display = num.toFixed(2) + '%';
-            else if (m.type === 'currency') display = (m.currency||'') + num.toFixed(2);
-            else if (m.type === 'count') display = Math.round(num).toLocaleString();
-            else display = num + (m.unit||'');
+            if (m.type==='percent')  display = num.toFixed(2)+'%';
+            else if (m.type==='currency') display = (m.currency||'')+num.toFixed(2);
+            else if (m.type==='count')    display = Math.round(num).toLocaleString();
+            else display = num+(m.unit||'');
           }
         }
         return `<td class="${isAnom?'anomaly':''}">${display}</td>`;
       }).join('');
       return `<tr>${cells}</tr>`;
     }).join('');
-
     return `<p class="platform-title">📊 ${table.platform}</p>
       <div class="table-wrapper">
-        <table><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>
+        <table><thead><tr>${header}</tr></thead><tbody>${rowsHtml}</tbody></table>
       </div>`;
   }).join('<br>');
 }
@@ -1124,139 +1185,85 @@ function renderTables(tables, metricDefs) {
 // ─────────────────────────────────────────────────────────────
 async function exportExcel() {
   if (!analysisResult) { showToast('请先运行分析'); return; }
-  const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
-  const configName = document.getElementById('config-name-input').value || '导出';
+  const validMetrics = metricRows.filter(m => m.name&&m.numerator&&m.denominator);
+  const configName   = document.getElementById('config-name-input').value || '导出';
   try {
     const res = await fetch('/api/export/excel', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ tables: analysisResult.tables, metrics: validMetrics, config_name: configName })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ tables:analysisResult.tables, metrics:validMetrics, config_name:configName })
     });
     if (!res.ok) { showToast('❌ 导出失败'); return; }
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url;
-    a.download = res.headers.get('Content-Disposition')?.match(/filename=(.+)/)?.[1] || 'export.xlsx';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const a = document.createElement('a'); a.href=url;
+    a.download = res.headers.get('Content-Disposition')?.match(/filename=(.+)/)?.[1]||'export.xlsx';
+    a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
     showToast('✅ Excel 已导出');
-  } catch(e) {
-    showToast('❌ 导出失败：' + e.message);
-  }
+  } catch(e) { showToast('❌ 导出失败：'+e.message); }
 }
 
 // ─────────────────────────────────────────────────────────────
-// Tab 切换
+// Tab 切换 / AI 分析
 // ─────────────────────────────────────────────────────────────
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
   document.getElementById(`tab-${name}`).classList.add('active');
 }
 
-// ─────────────────────────────────────────────────────────────
-// AI 文本分析
-// ─────────────────────────────────────────────────────────────
 async function runAIAnalysis() {
   if (!analysisResult) { showToast('请先运行分析'); return; }
-
   const apiKey = document.getElementById('ai-api-key').value.trim();
   if (!apiKey) { showToast('请先填写 Anthropic API Key'); return; }
-
-  const btn = document.getElementById('ai-analyze-btn');
-  const container = document.getElementById('ai-analysis-content');
-  btn.classList.add('loading');
-  btn.disabled = true;
-
-  container.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><p>正在分析投放数据，请稍候（约10-30秒）...</p></div>';
-
-  const validMetrics = metricRows.filter(m => m.name && m.numerator && m.denominator);
-  const dataSummary = buildDataSummary(analysisResult, validMetrics);
-
+  const btn=document.getElementById('ai-analyze-btn'), container=document.getElementById('ai-analysis-content');
+  btn.classList.add('loading'); btn.disabled=true;
+  container.innerHTML='<div class="ai-loading"><div class="ai-spinner"></div><p>正在分析投放数据，请稍候（约10-30秒）...</p></div>';
+  const vm=metricRows.filter(m=>m.name&&m.numerator&&m.denominator);
+  const summary=buildDataSummary(analysisResult,vm);
   try {
-    const res = await fetch('/api/ai-analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ api_key: apiKey, data_summary: dataSummary })
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || '请求失败: ' + res.status);
-    }
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    container.innerHTML = '<div class="ai-report">' + renderMarkdown(data.result) + '</div>';
-  } catch(e) {
-    container.innerHTML = `<div class="ai-error">❌ 分析失败：${e.message}<br><small>请检查 API Key 是否正确，以及网络连接是否正常</small></div>`;
-  } finally {
-    btn.classList.remove('loading');
-    btn.disabled = false;
-  }
+    const res=await fetch('/api/ai-analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:apiKey,data_summary:summary})});
+    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'请求失败:'+res.status);}
+    const data=await res.json();
+    if(data.error) throw new Error(data.error);
+    container.innerHTML='<div class="ai-report">'+renderMarkdown(data.result)+'</div>';
+  } catch(e){
+    container.innerHTML=`<div class="ai-error">❌ 分析失败：${e.message}<br><small>请检查 API Key 是否正确</small></div>`;
+  } finally{btn.classList.remove('loading');btn.disabled=false;}
 }
 
 function buildDataSummary(result, metricDefs) {
-  const lines = [];
-  const dtypeMap = {};
-  metricDefs.forEach(m => dtypeMap[m.name] = m);
-
-  result.tables.forEach(table => {
+  const lines=[],dtypeMap={};
+  metricDefs.forEach(m=>dtypeMap[m.name]=m);
+  result.tables.forEach(table=>{
     lines.push(`【平台：${table.platform}】`);
     lines.push(`数据行数：${table.rows.length} 条`);
-
-    // 各指标统计摘要
-    const metricCols = metricDefs.map(m => m.name).filter(n => table.columns.includes(n));
-    metricCols.forEach(col => {
-      const vals = table.rows.map(r => parseFloat(r[col])).filter(v => !isNaN(v));
-      if (!vals.length) return;
-      const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
-      const min = Math.min(...vals);
-      const max = Math.max(...vals);
-      const m = dtypeMap[col];
-      const fmt = v => {
-        if (m?.type === 'percent') return v.toFixed(2) + '%';
-        if (m?.type === 'currency') return (m.currency||'') + v.toFixed(2);
-        return v.toFixed(4);
-      };
-      lines.push(`  ${col}：平均=${fmt(avg)}，最低=${fmt(min)}，最高=${fmt(max)}`);
-
-      // 标注异常点
-      const anomIdxs = table.anomalies[col] || [];
-      if (anomIdxs.length) {
-        lines.push(`    ⚠️ 环比异常点（变化>50%）出现在第 ${anomIdxs.map(i=>i+1).join(',')} 行`);
-      }
+    metricDefs.map(m=>m.name).filter(n=>table.columns.includes(n)).forEach(col=>{
+      const vals=table.rows.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
+      if(!vals.length) return;
+      const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+      const m=dtypeMap[col];
+      const fmt=v=>m?.type==='percent'?v.toFixed(2)+'%':m?.type==='currency'?(m.currency||'')+v.toFixed(2):v.toFixed(4);
+      lines.push(`  ${col}：平均=${fmt(avg)}，最低=${fmt(Math.min(...vals))}，最高=${fmt(Math.max(...vals))}`);
     });
-
-    // 时间列数据范围
-    const timeCol = table.columns[0];
-    if (table.rows.length > 0) {
-      const times = table.rows.map(r => r[timeCol]).filter(Boolean);
-      if (times.length > 1) lines.push(`  数据周期：${times[0]} ～ ${times[times.length-1]}`);
-    }
     lines.push('');
   });
-
   return lines.join('\n');
 }
 
 function renderMarkdown(text) {
-  // 简单 Markdown 渲染
   return text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>')
     .replace(/^# (.+)$/gm,'<h1>$1</h1>')
-    .replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>')
-    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, s => `<ul>${s}</ul>`)
-    .replace(/\n\n/g,'</p><p>')
-    .replace(/\n/g,'<br>')
-    .replace(/^(.)/,'<p>$1')
-    .replace(/(.)$/,'$1</p>');
+    .replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>').replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,s=>`<ul>${s}</ul>`)
+    .replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>')
+    .replace(/^(.)/,'<p>$1').replace(/(.)$/,'$1</p>');
 }
 
-// 页面加载时初始化
+// 初始化
 loadSavedConfigs();
 </script>
 </body>
