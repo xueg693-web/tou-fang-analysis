@@ -698,6 +698,15 @@ async function loadSavedConfigs() {
         <span class="del" onclick="event.stopPropagation();deleteConfig('${c.name}')">✕</span>
       </span>
     `).join('');
+    // 自动恢复上次使用的配置
+    const lastName = localStorage.getItem('lastMetricConfig');
+    if (lastName) {
+      const cfg = configs.find(c => c.name === lastName);
+      if (cfg) {
+        metricRows = cfg.metrics.map(m => ({...m}));
+        renderMetricRows();
+      }
+    }
   } catch(e) {
     showToast('❌ 加载配置失败：' + e.message);
   }
@@ -740,6 +749,7 @@ async function applyConfig(name) {
     if (!cfg) return;
     metricRows = cfg.metrics.map(m => ({...m}));
     renderMetricRows();
+    localStorage.setItem('lastMetricConfig', name);
     showToast(`✅ 已加载配置"${name}"`);
   } catch(e) {
     showToast('❌ 加载配置失败：' + e.message);
